@@ -1,5 +1,7 @@
-export const createMovieCountTemplate = () => (
-  `<p>
-130 291 movies inside
-</p>`
-);
+
+export const createMovieCountTemplate = (cards) => {
+  const movieCount = cards.length;
+  return `<p>
+${movieCount} movies inside
+</p>`;
+};
