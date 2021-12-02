@@ -14,7 +14,7 @@ export function getRandomArrayFromArray (array, num) {
   }
   const resultsArr = [];
   for (let ind = 0; ind < num; ind++ ) {
-    const someElement = array[getRandomInteger(0, array.length -1)];
+    const someElement = array[getRandomInteger(0, array.length - 1)];
     if (!resultsArr.includes(someElement)) {
       resultsArr.push(someElement);
     }

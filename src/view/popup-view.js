@@ -94,9 +94,9 @@ export const createPopupTemplate = (card, commentsArray) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="${poster}" alt="">
+            <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
   
-            <p class="film-details__age">${age}</p>
+            <p class="film-details__age">${age}+</p>
           </div>
   
           <div class="film-details__info">

@@ -2,12 +2,12 @@ import dayjs from 'dayjs';
 import {getRandomInteger} from '../utils.js';
 import {getRandomArrayFromArray} from '../utils.js';
 
-const POSTERS = ['./images/posters/made-for-each-other.png',
-  './images/posters/popeye-meets-sinbad.png',
-  './images/posters/sagebrush-trail.jpg',
-  './images/posters/santa-claus-conquers-the-martians.jpg',
-  './images/posters/the-dance-of-life.jpg',
-  './images/posters/the-great-flamarion.jpg',
+const POSTERS = ['made-for-each-other.png',
+  'popeye-meets-sinbad.png',
+  'sagebrush-trail.jpg',
+  'santa-claus-conquers-the-martians.jpg',
+  'the-dance-of-life.jpg',
+  'the-great-flamarion.jpg',
 ];
 
 const TITLES = ['The Great Flamarion',
@@ -90,11 +90,11 @@ const COUNTRIES = [
 ];
 
 const AGE = [
-  '18+',
-  '16+',
-  '12+',
-  '6+',
-  '0+',
+  '18',
+  '16',
+  '12',
+  '6',
+  '0',
 ];
 
 const EMOJIS = [
@@ -122,14 +122,6 @@ const createMovieDuration = () => {
   return `${hours}h ${minutes}m`;
 };
 
-const generateCommentsNumber = () => {
-  const commentsCount = getRandomInteger(0, 5);
-  if (commentsCount === 0) {
-    return '';
-  }
-  return commentsCount;
-};
-
 const generateDate = () => {
   const maxYearGap = 100;
   const gap = getRandomInteger(-maxYearGap, 0);
@@ -143,31 +135,24 @@ const createMovieDescription = () => getRandomArrayFromArray(DESCRIPTIONS, getRa
 
 export const generateMovieCard = () => {
 
-  const releaseDate = generateDate();
-  const duration = createMovieDuration();
-  const description = createMovieDescription();
-  const writers = generateWriters();
-  const actors = generateActors();
   const title = TITLES[getRandomInteger(0, TITLES.length -1)];
-  const genres = generateGenres();
-
 
   return {
     title,
     originalTitle: `Original: ${title}`,
     poster: POSTERS[getRandomInteger(0, POSTERS.length -1)],
-    description,
-    releaseDate,
-    duration,
-    genres,
+    description: createMovieDescription(),
+    releaseDate: generateDate(),
+    duration: createMovieDuration(),
+    genres: generateGenres(),
     rating: getRandomInteger(1, 10),
-    comments: generateCommentsNumber(),
+    comments: getRandomInteger(0, 5),
     isWatched: Boolean(getRandomInteger(0,1)),
     isFavorite: Boolean(getRandomInteger(0,1)),
     isInWatchlist: Boolean(getRandomInteger(0,1)),
     director: DIRECTORS[getRandomInteger(0,DIRECTORS.length -1)],
-    writers,
-    actors,
+    writers: generateWriters(),
+    actors: generateActors(),
     country: COUNTRIES[getRandomInteger(0, COUNTRIES.length -1)],
     age: AGE[getRandomInteger(0, AGE.length -1)],
   };
