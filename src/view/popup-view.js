@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-
+import {createElement} from '../render.js';
 
 const createGenresTemplate = (genres) => {
   const isShort = Boolean(genres.length < 2);
@@ -64,7 +64,7 @@ const createCommentsTemplate = (array) => `<section class="film-details__comment
   </div>
 </section>`;
 
-export const createPopupTemplate = (card, commentsArray) => {
+const createPopupTemplate = (card, commentsArray) => {
   const {title,
     originalTitle,
     poster,
@@ -158,3 +158,31 @@ export const createPopupTemplate = (card, commentsArray) => {
     </form>
   </section>`;
 };
+
+export default class PopupView {
+
+  #element = null;
+  #card = null;
+  #comments = null;
+
+  constructor(card, comments) {
+    this.#card = card;
+    this.#comments = comments;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPopupTemplate(this.#card, this.#comments);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
