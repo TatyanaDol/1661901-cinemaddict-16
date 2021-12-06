@@ -1,7 +1,7 @@
 import {findFilter} from '../utils.js';
+import {createElement} from '../render.js';
 
-
-export const createMenuStatisticAndFilterTemplate = (filters) => {
+const createMenuStatisticAndFilterTemplate = (filters) => {
 
   const history = findFilter('history', filters).count;
   const watchlist = findFilter('watchlist', filters).count;
@@ -17,3 +17,28 @@ export const createMenuStatisticAndFilterTemplate = (filters) => {
   <a href="#stats" class="main-navigation__additional main-navigation__additional--active">Stats</a>
 </nav>`;
 };
+
+export default class MenuStatisticFilterView {
+  #element = null;
+  #filters = null;
+
+  constructor(filters) {
+    this.#filters = filters;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMenuStatisticAndFilterTemplate(this.#filters);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

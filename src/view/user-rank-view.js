@@ -1,4 +1,5 @@
 import {findFilter} from '../utils.js';
+import {createElement} from '../render.js';
 
 const Rating = {
   NO_RANK: 0,
@@ -17,7 +18,7 @@ const Rating = {
 };
 
 
-export const createUserRankTemplate = (filters) => {
+const createUserRankTemplate = (filters) => {
   const historyFilterCount = findFilter('history', filters).count;
   let profileRating = '';
 
@@ -36,3 +37,28 @@ export const createUserRankTemplate = (filters) => {
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };
+
+export default class UserRankView {
+  #element = null;
+  #filters = null;
+
+  constructor(filters) {
+    this.#filters = filters;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createUserRankTemplate(this.#filters);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

@@ -1,11 +1,15 @@
 import dayjs from 'dayjs';
+import {createElement} from '../render.js';
+
+
+const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
 
 const createShortDescription = (description) => {
-  const isShort = Boolean(description.length < 141);
+  const isShort = Boolean(description.length <= SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS);
   return `<p class="film-card__description">${isShort ? description : `${description.slice(0, 139)  }...`}</p>`;
 };
 
-export const createMovieCardTemplate = (card) => {
+const createMovieCardTemplate = (card) => {
   const {title, poster, description, releaseDate, rating, duration, genres, comments, isWatched, isFavorite, isInWatchlist} = card;
 
   const watchlistClassName = isInWatchlist ? 'film-card__controls-item--active' : '';
@@ -22,7 +26,7 @@ export const createMovieCardTemplate = (card) => {
     <span class="film-card__duration">${duration}</span>
     <span class="film-card__genre">${genres[0]}</span>
   </p>
-  <img src="${poster}" alt="" class="film-card__poster">
+  <img src="./images/posters/${poster}" alt="" class="film-card__poster">
   ${createShortDescription(description)}
   <span class="film-card__comments">${isComments}</span>
 </a>
@@ -33,3 +37,28 @@ export const createMovieCardTemplate = (card) => {
 </div>
 </article>`;
 };
+
+export default class MovieCardView {
+  #element = null;
+  #card = null;
+
+  constructor(card) {
+    this.#card = card;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMovieCardTemplate(this.#card);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
