@@ -64,7 +64,7 @@ const createCommentsTemplate = (array) => `<section class="film-details__comment
   </div>
 </section>`;
 
-const createPopupTemplate = (card, commentsArray) => {
+const createPopupTemplate = (card, comments) => {
   const {title,
     originalTitle,
     poster,
@@ -153,7 +153,7 @@ const createPopupTemplate = (card, commentsArray) => {
       </div>
   
       <div class="film-details__bottom-container">
-      ${createCommentsTemplate(commentsArray)}
+      ${createCommentsTemplate(comments)}
       </div>
     </form>
   </section>`;

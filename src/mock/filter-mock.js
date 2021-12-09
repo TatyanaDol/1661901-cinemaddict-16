@@ -1,6 +1,6 @@
 
 const cardsToFilter = {
-  allMovies: (cards) => cards.length,
+  all: (cards) => cards.length,
   watchlist: (cards) => cards.filter((card) => card.isInWatchlist).length,
   history: (cards) => cards.filter((card) => card.isWatched).length,
   favorites: (cards) => cards.filter((card) => card.isFavorite).length,
