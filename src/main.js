@@ -7,13 +7,13 @@ import MovieCountView from './view/movies-count-view.js';
 import PopupView from './view/popup-view';
 import {generateMovieCard, generateComments} from './mock/mock-card.js';
 import {generateFilter} from './mock/filter-mock.js';
-import {SetPosition, render} from './render.js';
+import {SetPosition, render, remove} from './utils/render.js';
 import MenuStatisticFilterView from './view/menu-statistic-and-filter-view.js';
 import EmptyMovieListView from './view/movie-list-empty-view.js';
 import {findActiveFilterName} from './view/movie-list-empty-view.js';
-import {findFilter} from './utils.js';
+import {findFilter} from './utils/utils.js';
 
-const CARD_COUNT = 0;
+const CARD_COUNT = 22;
 const CARD_COUNT_PER_STEP = 5;
 
 const movieCards = Array.from({length: CARD_COUNT}, generateMovieCard);
@@ -25,11 +25,11 @@ const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
 
-render(headerElement, new UserRankView(filters).element, SetPosition.BEFOREEND);
+render(headerElement, new UserRankView(filters), SetPosition.BEFOREEND);
 
 const statAndFiltersComponent = new MenuStatisticFilterView(filters);
 
-render(mainElement, statAndFiltersComponent.element, SetPosition.BEFOREEND);
+render(mainElement, statAndFiltersComponent, SetPosition.BEFOREEND);
 
 const renderCard = (filmsListElement, card, comments) => {
   const movieCardComponent = new MovieCardView(card);
@@ -38,7 +38,7 @@ const renderCard = (filmsListElement, card, comments) => {
 
   const showCardPopup = () => {
     bodyElement.classList.add('hide-overflow');
-    render(footerElement, movieCardPopupComponent.element, SetPosition.AFTEREND);
+    render(footerElement, movieCardPopupComponent, SetPosition.AFTEREND);
   };
 
   const closeCardPopup = () => {
@@ -54,17 +54,17 @@ const renderCard = (filmsListElement, card, comments) => {
     }
   };
 
-  movieCardComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
+  movieCardComponent.setCardClickHandler(() => {
     showCardPopup();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  movieCardPopupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+  movieCardPopupComponent.setCloseButtonClickHandler(() => {
     closeCardPopup();
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  render(filmsListElement, movieCardComponent.element, SetPosition.BEFOREEND);
+  render(filmsListElement, movieCardComponent, SetPosition.BEFOREEND);
 
 };
 
@@ -74,13 +74,13 @@ const renderList = (container, cards, comments, cardsFilters) => {
   const activeFilterCount = findFilter(findActiveFilterName(activeFilterElement).toLowerCase(), cardsFilters).count;
 
   if (!activeFilterCount) {
-    render(container, new EmptyMovieListView(activeFilterElement).element, SetPosition.BEFOREEND);
+    render(container, new EmptyMovieListView(activeFilterElement), SetPosition.BEFOREEND);
   } else {
 
-    render(container, new SortView().element, SetPosition.BEFOREEND);
+    render(container, new SortView(), SetPosition.BEFOREEND);
 
     const movieListComponent = new MovieListView();
-    render(container, movieListComponent.element, SetPosition.BEFOREEND);
+    render(container, movieListComponent, SetPosition.BEFOREEND);
 
     const filmsList = movieListComponent.element.querySelector('.films-list');
     const filmsListContainer = movieListComponent.element.querySelector('.films-list__container');
@@ -94,7 +94,7 @@ const renderList = (container, cards, comments, cardsFilters) => {
 
       const showMoreButtonComponent = new ShowMoreButtonView();
 
-      render(filmsList, showMoreButtonComponent.element, SetPosition.BEFOREEND);
+      render(filmsList, showMoreButtonComponent, SetPosition.BEFOREEND);
 
       showMoreButtonComponent.element.addEventListener('click', (evt) => {
         evt.preventDefault();
@@ -105,9 +105,7 @@ const renderList = (container, cards, comments, cardsFilters) => {
         renderedCardsCount += CARD_COUNT_PER_STEP;
 
         if (renderedCardsCount >= cards.length) {
-
-          showMoreButtonComponent.element.remove();
-          showMoreButtonComponent.removeElement();
+          remove(showMoreButtonComponent);
         }
       });
     }
@@ -117,4 +115,4 @@ const renderList = (container, cards, comments, cardsFilters) => {
 renderList(mainElement, movieCards, cardsComments, filters);
 
 const footerStatisticsElement = footerElement.querySelector('.footer__statistics');
-render(footerStatisticsElement, new MovieCountView(movieCards).element, SetPosition.BEFOREEND);
+render(footerStatisticsElement, new MovieCountView(movieCards), SetPosition.BEFOREEND);

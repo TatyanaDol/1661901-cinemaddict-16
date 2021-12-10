@@ -1,5 +1,6 @@
-import {findFilter} from '../utils.js';
-import {createElement} from '../render.js';
+import {findFilter} from '../utils/utils.js';
+import AbstractView from './abstract-view.js';
+
 
 const Rating = {
   NO_RANK: 0,
@@ -38,27 +39,15 @@ const createUserRankTemplate = (filters) => {
   </section>`;
 };
 
-export default class UserRankView {
-  #element = null;
+export default class UserRankView extends AbstractView {
   #filters = null;
 
   constructor(filters) {
+    super();
     this.#filters = filters;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createUserRankTemplate(this.#filters);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createMovieCountTemplate = (cards) => {
   const movieCount = cards.length;
@@ -7,27 +7,15 @@ ${movieCount} movies inside
 </p>`;
 };
 
-export default class MovieCountView {
-  #element = null;
+export default class MovieCountView extends AbstractView {
   #card = null;
 
   constructor(card) {
+    super();
     this.#card = card;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMovieCountTemplate(this.#card);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

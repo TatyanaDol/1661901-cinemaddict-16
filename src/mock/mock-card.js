@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import {getRandomInteger} from '../utils.js';
-import {getRandomArrayFromArray} from '../utils.js';
+import {getRandomInteger} from '../utils/utils.js';
+import {getRandomArrayFromArray} from '../utils/utils.js';
 
 const POSTERS = ['made-for-each-other.png',
   'popeye-meets-sinbad.png',
