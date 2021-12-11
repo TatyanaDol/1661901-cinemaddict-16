@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const TitleContent = {
   ALL: 'There are no movies in our database',
@@ -25,27 +25,15 @@ const createEmptyMovieListTemplate = (activeFilterElement) => (
 </section>`
 );
 
-export default class EmptyMovieListView {
-  #element = null;
+export default class EmptyMovieListView extends AbstractView {
   #activeFilterElement = null;
 
   constructor(activeFilterElement) {
+    super();
     this.#activeFilterElement = activeFilterElement;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEmptyMovieListTemplate(this.#activeFilterElement);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 
 const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
@@ -38,27 +38,25 @@ const createMovieCardTemplate = (card) => {
 </article>`;
 };
 
-export default class MovieCardView {
-  #element = null;
+export default class MovieCardView extends AbstractView {
   #card = null;
 
   constructor(card) {
+    super();
     this.#card = card;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMovieCardTemplate(this.#card);
   }
 
-  removeElement() {
-    this.#element = null;
+  setCardClickHandler = (callback) => {
+    this._callback.cardClick = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#cardClickHandler);
+  }
+
+  #cardClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.cardClick();
   }
 }
