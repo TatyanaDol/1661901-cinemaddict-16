@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {getRandomInteger} from '../utils/utils.js';
 import {getRandomArrayFromArray} from '../utils/utils.js';
+import {nanoid} from 'nanoid';
 
 const POSTERS = ['made-for-each-other.png',
   'popeye-meets-sinbad.png',
@@ -138,6 +139,7 @@ export const generateMovieCard = () => {
   const title = TITLES[getRandomInteger(0, TITLES.length -1)];
 
   return {
+    id: nanoid(),
     title,
     originalTitle: `Original: ${title}`,
     poster: POSTERS[getRandomInteger(0, POSTERS.length -1)],
