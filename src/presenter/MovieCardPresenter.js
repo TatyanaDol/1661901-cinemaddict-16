@@ -66,12 +66,8 @@ export default class MovieCardPresenter {
       remove(this.#movieCardPopupComponent);
     }
 
-    #closePreviousPopup = () => {
-      this.#closeOldCardPopup();
-    }
-
     #showCardPopup = () => {
-      this.#closePreviousPopup();
+      this.#closeOldCardPopup();
       this.#bodyElement.classList.add('hide-overflow');
       render(this.#footerContainer, this.#movieCardPopupComponent, SetPosition.AFTEREND);
     }

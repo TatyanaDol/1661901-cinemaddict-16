@@ -4,7 +4,8 @@ import ShowMoreButtonView from '../view/show-button-view.js';
 import {SetPosition, render, remove} from '../utils/render.js';
 import EmptyMovieListView from '../view/movie-list-empty-view.js';
 import MovieCardPresenter from './MovieCardPresenter.js';
-import {updateItem} from '../utils/utils.js';
+import {updateItem, sortFilmsByRating, sortFilmsByDate} from '../utils/utils.js';
+import {SortType} from '../view/sort-view.js';
 
 const CARD_COUNT_PER_STEP = 5;
 
@@ -24,6 +25,8 @@ export default class MovieListPresenter {
     #movieComments = [];
     #renderedCardsCount = CARD_COUNT_PER_STEP;
     #cardPresenterMap = new Map();
+    #currentMovieSortType = SortType.DEFAULT;
+    #sourcedMovieCards = [];
 
     constructor(mainContainer, footerContainer, activeFilterElement, activeFilterCount) {
       this.#mainContainer = mainContainer;
@@ -35,12 +38,42 @@ export default class MovieListPresenter {
     init = (movieCards, movieComments) => {
       this.#movieCards = [...movieCards];
       this.#movieComments = [...movieComments];
+      this.#sourcedMovieCards = [...movieCards];
 
       if (!this.#activeFilterCount) {
         this.#renderEmptyList();
       } else {
         this.#renderFullList();
       }
+    }
+
+    #sortMovieCards = (sortType) => {
+
+      switch (sortType) {
+        case SortType.RATING:
+          this.#movieCards.sort(sortFilmsByRating);
+          break;
+
+        case SortType.DATE:
+          this.#movieCards.sort(sortFilmsByDate);
+          break;
+
+        default:
+          this.#movieCards = [...this.#sourcedMovieCards];
+          break;
+      }
+
+      this.#currentMovieSortType = sortType;
+    }
+
+    #handleMovieSortChange = (sortType) => {
+      if (this.#currentMovieSortType === sortType) {
+        return;
+      }
+
+      this.#sortMovieCards(sortType);
+      this.#clearMovieCardsList();
+      this.#renderFullList();
     }
 
     #handleCloseOldCardPopup = () => {
@@ -52,11 +85,13 @@ export default class MovieListPresenter {
 
     #handleCardChange = (updatedCard) => {
       this.#movieCards = updateItem(this.#movieCards, updatedCard);
+      this.#sourcedMovieCards = updateItem(this.#sourcedMovieCards, updatedCard);
       this.#cardPresenterMap.get(updatedCard.id).init(updatedCard, this.#movieComments);
     }
 
     #renderSort = () => {
       render(this.#mainContainer, this.#moviesSortComponent, SetPosition.BEFOREEND);
+      this.#moviesSortComponent.setMovieSortChangeHandler(this.#handleMovieSortChange);
     }
 
     #renderCard = (card, comments) => {

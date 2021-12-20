@@ -41,3 +41,6 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1),
   ];
 };
+
+export const sortFilmsByRating = (cardA, cardB) => cardB.rating - cardA.rating;
+export const sortFilmsByDate = (cardA, cardB) => cardB.releaseDate - cardA.releaseDate;
