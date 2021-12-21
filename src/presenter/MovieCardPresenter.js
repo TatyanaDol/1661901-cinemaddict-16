@@ -44,6 +44,8 @@ export default class MovieCardPresenter {
       this.#movieCardPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
       this.#movieCardPopupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
+      this.#movieCardPopupComponent.setNewCommentsSubmit(this.#handleNewCommentsSubmit);
+
       if(prevCardComponent === null || prevCardPopupComponent === null) {
         render(this.#filmsListContainer, this.#movieCardComponent, SetPosition.BEFOREEND);
         return;
@@ -96,15 +98,19 @@ export default class MovieCardPresenter {
     }
 
     #handleFavoriteClick = () => {
-      this.#changeCardData({...this.#card, isFavorite: !this.#card.isFavorite});
+      this.#changeCardData({...this.#card, isFavorite: !this.#card.isFavorite}, this.#comments);
     }
 
     #handleWatchedClick = () => {
-      this.#changeCardData({...this.#card, isWatched: !this.#card.isWatched});
+      this.#changeCardData({...this.#card, isWatched: !this.#card.isWatched}, this.#comments);
     }
 
     #handleWatchlistClick = () => {
-      this.#changeCardData({...this.#card, isInWatchlist: !this.#card.isInWatchlist});
+      this.#changeCardData({...this.#card, isInWatchlist: !this.#card.isInWatchlist}, this.#comments);
+    }
+
+    #handleNewCommentsSubmit = (card, comments) => {
+      this.#changeCardData(card, comments);
     }
 
 }

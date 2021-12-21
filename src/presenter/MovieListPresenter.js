@@ -83,10 +83,11 @@ export default class MovieListPresenter {
       }
     }
 
-    #handleCardChange = (updatedCard) => {
+    #handleCardChange = (updatedCard, updatedComments) => {
       this.#movieCards = updateItem(this.#movieCards, updatedCard);
       this.#sourcedMovieCards = updateItem(this.#sourcedMovieCards, updatedCard);
-      this.#cardPresenterMap.get(updatedCard.id).init(updatedCard, this.#movieComments);
+      this.#movieComments = updateItem(this.#movieComments, updatedComments);
+      this.#cardPresenterMap.get(updatedCard.id).init(updatedCard, updatedComments);
     }
 
     #renderSort = () => {

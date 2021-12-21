@@ -126,7 +126,6 @@ const createMovieDuration = () => {
 const generateDate = () => {
   const maxYearGap = 100;
   const gap = getRandomInteger(-maxYearGap, 0);
-
   return dayjs().add(gap, 'year').toDate();
 };
 const generateGenres = () => getRandomArrayFromArray(GENRES, getRandomInteger(1, 5));
