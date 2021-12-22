@@ -3,6 +3,7 @@ import AbstractView from './abstract-view.js';
 
 export default class SmartView extends AbstractView {
   _data = {};
+  _commentsData = [];
 
   restoreHandlers() {
     throw new Error('Abstract method not implemented: restoreHandlers');
