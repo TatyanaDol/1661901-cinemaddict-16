@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
+import {nanoid} from 'nanoid';
+import he from 'he';
 
 const createGenresTemplate = (genres) => {
   const isShort = Boolean(genres.length < 2);
@@ -21,7 +23,7 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
   </span>
   <div>
-    <p class="film-details__comment-text">${text}</p>
+    <p class="film-details__comment-text">${he.encode(text)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${autor}</span>
       <span class="film-details__comment-day">${dayjs(commentDate).format('YYYY/MM/DD HH:mm')}</span>
@@ -183,6 +185,7 @@ export default class PopupView extends SmartView {
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setWatchlistClickHandler(this._callback.watchlistClick);
     this.setNewCommentsSubmit(this._callback.commentsSubmit);
+    this.setCommentDeleteButtonClickHandler(this._callback.deleteComment);
   }
 
   #setInnerHandlers = () => {
@@ -190,10 +193,8 @@ export default class PopupView extends SmartView {
       .addEventListener('click', this.#handleEmojiClick);
 
     this.element.querySelector('.film-details__comment-input')
-      .addEventListener('keydown', this.#onEnterKeyDown);
-
-    this.element.querySelector('.film-details__comment-input')
       .addEventListener('input', this.#commentInputHandler);
+
   }
 
   static parseMovieToData = (card) => ({...card,
@@ -221,11 +222,16 @@ export default class PopupView extends SmartView {
   }
 
   static parseDataToMovieComments = (commentsData, data) => {
-    const comments = [...commentsData, {text: data.newCommentText, emoji: data.newCommentEmoji, autor: 'unknown', commentDate: new Date()}];
+    const comments = [...commentsData, {id: nanoid(), text: data.newCommentText, emoji: data.newCommentEmoji, autor: 'unknown', commentDate: new Date()}];
 
     return comments;
   }
 
+  resetPopup = () => {
+    this.updateData(
+      PopupView.parseMovieToData(this._data),
+    );
+  }
 
   #commentInputHandler = (evt) => {
     evt.preventDefault();
@@ -256,9 +262,12 @@ export default class PopupView extends SmartView {
     if(evt.keyCode === 13) {
       evt.preventDefault();
       this.saveScrollPosition();
+      const commentsNumber = this._data.comments;
+      this.updateData({
+        comments: commentsNumber + 1,
+      });
       this._callback.commentsSubmit(PopupView.parseDataToMovie(this._data), PopupView.parseDataToMovieComments(this._commentsData, this._data));
       this.setScrollPosition();
-
     }
   }
 
@@ -269,7 +278,9 @@ export default class PopupView extends SmartView {
 
   setScrollPosition = () => {
     this.#newElementScroll = document.querySelector('.film-details');
-    this.#newElementScroll.scrollTop = this._scrollPosition;
+    if(this.#newElementScroll) {
+      this.#newElementScroll.scrollTop = this._scrollPosition;
+    }
   }
 
   setCloseButtonClickHandler = (callback) => {
@@ -299,17 +310,49 @@ export default class PopupView extends SmartView {
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
+    this.saveScrollPosition();
     this._callback.favoriteClick();
+    this.setScrollPosition();
   }
 
   #watchlistClickHandler = (evt) => {
     evt.preventDefault();
+    this.saveScrollPosition();
     this._callback.watchlistClick();
+    this.setScrollPosition();
   }
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
+    this.saveScrollPosition();
     this._callback.watchedClick();
+    this.setScrollPosition();
+  }
+
+  setCommentDeleteButtonClickHandler = (callback) => {
+    this._callback.deleteComment = callback;
+    this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#commentDeleteClickHandler);
+  }
+
+  #commentDeleteClickHandler = (evt) => {
+    if(evt.target.tagName !== 'BUTTON') {
+      return;
+    }
+    evt.preventDefault();
+    const delitedComment = evt.target.parentElement.parentElement.parentElement;
+
+    const commentDateElement = delitedComment.querySelector('.film-details__comment-day');
+    const commentAuthorElement = delitedComment.querySelector('.film-details__comment-author');
+    const commentTextElement = delitedComment.querySelector('.film-details__comment-text');
+    const index = this._commentsData.findIndex((comment) => comment.text === commentTextElement.textContent && comment.autor === commentAuthorElement.textContent && dayjs(comment.commentDate).format('YYYY/MM/DD HH:mm') === commentDateElement.textContent);
+    this.saveScrollPosition();
+
+    const commentsNumber = this._data.comments;
+    this.updateData({
+      comments: commentsNumber - 1,
+    });
+    this._callback.deleteComment(PopupView.parseDataToMovie(this._data), this._commentsData[index]);
+    this.setScrollPosition();
   }
 
 }

@@ -2,6 +2,18 @@ import MovieCardView from '../view/movie-card-view.js';
 import PopupView from '../view/popup-view';
 import {SetPosition, render, remove, replace} from '../utils/render.js';
 
+export const UserAction = {
+  UPDATE_CARD: 'UPDATE_CARD',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 export default class MovieCardPresenter {
 
     #movieCardComponent = null;
@@ -40,11 +52,12 @@ export default class MovieCardPresenter {
       this.#movieCardComponent.setWatchedClickHandler(this.#handleWatchedClick);
       this.#movieCardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
 
-      this.#movieCardPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-      this.#movieCardPopupComponent.setWatchedClickHandler(this.#handleWatchedClick);
-      this.#movieCardPopupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+      this.#movieCardPopupComponent.setFavoriteClickHandler(this.#handleFavoriteClickOnPopup);
+      this.#movieCardPopupComponent.setWatchedClickHandler(this.#handleWatchedClickOnPopup);
+      this.#movieCardPopupComponent.setWatchlistClickHandler(this.#handleWatchlistClickOnPopup);
 
       this.#movieCardPopupComponent.setNewCommentsSubmit(this.#handleNewCommentsSubmit);
+      this.#movieCardPopupComponent.setCommentDeleteButtonClickHandler(this.#handleCommentDelete);
 
       if(prevCardComponent === null || prevCardPopupComponent === null) {
         render(this.#filmsListContainer, this.#movieCardComponent, SetPosition.BEFOREEND);
@@ -74,7 +87,13 @@ export default class MovieCardPresenter {
       render(this.#footerContainer, this.#movieCardPopupComponent, SetPosition.AFTEREND);
     }
 
+    showPopup = () => {
+      this.#showCardPopup();
+      document.addEventListener('keydown', this.#onEscKeyDown);
+    }
+
     #closeCardPopup = () => {
+      this.#movieCardPopupComponent.resetPopup();
       this.#bodyElement.classList.remove('hide-overflow');
       this.#movieCardPopupComponent.element.remove();
       document.removeEventListener('keydown', this.#onEscKeyDown);
@@ -98,19 +117,62 @@ export default class MovieCardPresenter {
     }
 
     #handleFavoriteClick = () => {
-      this.#changeCardData({...this.#card, isFavorite: !this.#card.isFavorite}, this.#comments);
+      this.#changeCardData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        {...this.#card, isFavorite: !this.#card.isFavorite}, this.#comments);
+    }
+
+    #handleFavoriteClickOnPopup = () => {
+      const isPopup = true;
+      this.#changeCardData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        {...this.#card, isFavorite: !this.#card.isFavorite}, this.#comments, isPopup);
     }
 
     #handleWatchedClick = () => {
-      this.#changeCardData({...this.#card, isWatched: !this.#card.isWatched}, this.#comments);
+      this.#changeCardData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        {...this.#card, isWatched: !this.#card.isWatched}, this.#comments);
+    }
+
+    #handleWatchedClickOnPopup = () => {
+      const isPopup = true;
+      this.#changeCardData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        {...this.#card, isWatched: !this.#card.isWatched}, this.#comments, isPopup);
     }
 
     #handleWatchlistClick = () => {
-      this.#changeCardData({...this.#card, isInWatchlist: !this.#card.isInWatchlist}, this.#comments);
+      this.#changeCardData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        {...this.#card, isInWatchlist: !this.#card.isInWatchlist}, this.#comments);
+    }
+
+    #handleWatchlistClickOnPopup = () => {
+      const isPopup = true;
+      this.#changeCardData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        {...this.#card, isInWatchlist: !this.#card.isInWatchlist}, this.#comments, isPopup);
     }
 
     #handleNewCommentsSubmit = (card, comments) => {
-      this.#changeCardData(card, comments);
+      this.#changeCardData(
+        UserAction.ADD_COMMENT,
+        UpdateType.PATCH,
+        card, comments);
+    }
+
+    #handleCommentDelete = (card, comments) => {
+      this.#changeCardData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        card, comments);
     }
 
 }
