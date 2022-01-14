@@ -163,6 +163,7 @@ export const generateComments = () => {
 
   const commentDate = dayjs().add(-getRandomInteger(0,10), 'day').toDate();
   return {
+    id: nanoid(),
     text: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length -1)],
     emoji: EMOJIS[getRandomInteger(0, EMOJIS.length -1)],
     autor: COMMENTS_AUTORS[getRandomInteger(0, COMMENTS_AUTORS.length -1)],

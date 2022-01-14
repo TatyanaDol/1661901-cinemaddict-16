@@ -1,39 +1,34 @@
 import AbstractView from './abstract-view.js';
+import {FilterType} from '../model/filter-model.js';
 
 const TitleContent = {
-  ALL: 'There are no movies in our database',
-  WATCHLIST: 'There are no movies to watch now',
-  HISTORY: 'There are no watched movies now',
-  FAVORITES: 'There are no favorite movies now',
+  [FilterType.ALL]: 'There are no movies in our database',
+  [FilterType.WATCHLIST]: 'There are no movies to watch now',
+  [FilterType.HISTORY]: 'There are no watched movies now',
+  [FilterType.FAVORITES]: 'There are no favorite movies now',
 };
 
-export const findActiveFilterName = (activeFilterElement) => {
-  const spaceIndex = activeFilterElement.textContent.indexOf(' ');
-  const activeFilterName = activeFilterElement.textContent.slice(0, spaceIndex);
-  return activeFilterName;
-};
+const createEmptyMovieListTemplate = (activeFilter) => {
+  const emptyMovieListTitleText = TitleContent[activeFilter];
 
-const createEmptyFilmsListTitle = (activeFilterElement) => TitleContent[findActiveFilterName(activeFilterElement).toUpperCase()];
-
-const createEmptyMovieListTemplate = (activeFilterElement) => (
-  `<section class="films">
+  return `<section class="films">
   <section class="films-list">
-    <h2 class="films-list__title">${createEmptyFilmsListTitle(activeFilterElement)}</h2>
+    <h2 class="films-list__title">${emptyMovieListTitleText}</h2>
 
     
   </section>
-</section>`
-);
+</section>`;
+};
 
 export default class EmptyMovieListView extends AbstractView {
-  #activeFilterElement = null;
+  #activeFilter = null;
 
-  constructor(activeFilterElement) {
+  constructor(activeFilter) {
     super();
-    this.#activeFilterElement = activeFilterElement;
+    this.#activeFilter = activeFilter;
   }
 
   get template() {
-    return createEmptyMovieListTemplate(this.#activeFilterElement);
+    return createEmptyMovieListTemplate(this.#activeFilter);
   }
 }

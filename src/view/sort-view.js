@@ -6,17 +6,25 @@ export const SortType = {
   RATING: 'rating',
 };
 
-export const createSortTemplate = () => (
+export const createSortTemplate = (currentMovieSortType) => (
   `<ul class="sort">
-<li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-<li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-<li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
+<li><a href="#" class="sort__button ${currentMovieSortType === SortType.DEFAULT ? 'sort__button--active' : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+<li><a href="#" class="sort__button ${currentMovieSortType === SortType.DATE ? 'sort__button--active' : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+<li><a href="#" class="sort__button ${currentMovieSortType === SortType.RATING ? 'sort__button--active' : ''}" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
 </ul>`
 );
 
 export default class SortView extends AbstractView {
+
+  #currentMovieSortType = null;
+
+  constructor(currentMovieSortType) {
+    super();
+    this.#currentMovieSortType = currentMovieSortType;
+  }
+
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentMovieSortType);
   }
 
   setMovieSortChangeHandler = (callback) => {
@@ -30,15 +38,7 @@ export default class SortView extends AbstractView {
       return;
     }
     evt.preventDefault();
-    this.#handleActiveClassChange(evt);
     this._callback.sortChange(evt.target.dataset.sortType);
   }
 
-  #handleActiveClassChange = (evt) => {
-    const allSortButtons = document.querySelectorAll('.sort__button');
-    allSortButtons.forEach((element) => {
-      element.classList.remove('sort__button--active');
-    });
-    evt.target.classList.add('sort__button--active');
-  }
 }

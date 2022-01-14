@@ -20,7 +20,7 @@ const Rating = {
 
 
 const createUserRankTemplate = (filters) => {
-  const historyFilterCount = findFilter('history', filters).count;
+  const historyFilterCount = findFilter('History', filters).count;
   let profileRating = '';
 
   if (historyFilterCount >= Rating.NOVICE.from && historyFilterCount <= Rating.NOVICE.to) {
