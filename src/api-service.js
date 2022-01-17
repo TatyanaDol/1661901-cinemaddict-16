@@ -70,12 +70,12 @@ export default class ApiService {
       const adaptedMovie = {
         ...movie,
         'film_info': {
-            description: movie.description,
-            actors: movie.actors,
-            director: movie.director,
-            poster: movie.poster,
-            title: movie.title,
-            writers: movie.writers,
+          description: movie.description,
+          actors: movie.actors,
+          director: movie.director,
+          poster: movie.poster,
+          title: movie.title,
+          writers: movie.writers,
           'age_rating': movie.age,
           'alternative_title': movie.originalTitle,
           genre: movie.genres,
@@ -104,12 +104,12 @@ export default class ApiService {
       delete adaptedMovie.isWatched;
       delete adaptedMovie.isFavorite;
       delete adaptedMovie.isInWatchlist;
-     delete adaptedMovie.description;
-     delete adaptedMovie.actors;
-     delete adaptedMovie.director;
-     delete adaptedMovie.poster;
-     delete adaptedMovie.title;
-     delete adaptedMovie.writers;
+      delete adaptedMovie.description;
+      delete adaptedMovie.actors;
+      delete adaptedMovie.director;
+      delete adaptedMovie.poster;
+      delete adaptedMovie.title;
+      delete adaptedMovie.writers;
 
       return adaptedMovie;
     }
