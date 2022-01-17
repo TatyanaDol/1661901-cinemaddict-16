@@ -1,5 +1,6 @@
 import {findFilter} from '../utils/utils.js';
 import AbstractView from './abstract-view.js';
+import {FilterType} from '../model/filter-model.js';
 
 
 const Rating = {
@@ -20,7 +21,7 @@ const Rating = {
 
 
 const createUserRankTemplate = (filters) => {
-  const historyFilterCount = findFilter('History', filters).count;
+  const historyFilterCount = findFilter(FilterType.HISTORY, filters).count;
   let profileRating = '';
 
   if (historyFilterCount >= Rating.NOVICE.from && historyFilterCount <= Rating.NOVICE.to) {

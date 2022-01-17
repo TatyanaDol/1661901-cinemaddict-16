@@ -12,6 +12,8 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  COMMENTS: 'COMMENTS'
 };
 
 export default class MovieCardPresenter {
@@ -26,23 +28,30 @@ export default class MovieCardPresenter {
 
     #card = null;
     #comments = null;
+    #commentsModel = null;
 
-    constructor(filmsListContainer, footerContainer, changeCardData, handleCloseOldCardPopup) {
+    constructor(filmsListContainer, footerContainer, changeCardData, handleCloseOldCardPopup, commentsModel) {
       this.#filmsListContainer = filmsListContainer;
       this.#footerContainer = footerContainer;
       this.#changeCardData = changeCardData;
       this.#closeOldCardPopup = handleCloseOldCardPopup;
+      this.#commentsModel = commentsModel;
     }
 
     init = (card, comments) => {
       this.#card = card;
-      this.#comments = [...comments];
+      if(!comments) {
+        this.#comments = [];
+      }
+      else {
+        this.#comments = [...comments];
+      }
 
       const prevCardComponent = this.#movieCardComponent;
       const prevCardPopupComponent = this.#movieCardPopupComponent;
 
       this.#movieCardComponent = new MovieCardView(card);
-      this.#movieCardPopupComponent = new PopupView(card, comments);
+      this.#movieCardPopupComponent = new PopupView(card, this.#comments);
       this.#bodyElement = document.querySelector('body');
 
       this.#movieCardComponent.setCardClickHandler(this.#handleMovieCardClick);
@@ -82,6 +91,8 @@ export default class MovieCardPresenter {
     }
 
     #showCardPopup = () => {
+      this.#commentsModel.init(this.#card, this.#card.id);
+
       this.#closeOldCardPopup();
       this.#bodyElement.classList.add('hide-overflow');
       render(this.#footerContainer, this.#movieCardPopupComponent, SetPosition.AFTEREND);

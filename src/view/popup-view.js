@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
 import {nanoid} from 'nanoid';
 import he from 'he';
+import {createMovieDuration} from '../utils/utils.js';
 
 const createGenresTemplate = (genres) => {
   const isShort = Boolean(genres.length < 2);
@@ -17,7 +18,7 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
   <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${array.length}</span></h3>
 
   <ul class="film-details__comments-list"> ${array.map((comment) => {
-    const {text, emoji, autor, commentDate} = comment;
+    const {text, emoji, author, commentDate} = comment;
     return `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -25,7 +26,7 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
   <div>
     <p class="film-details__comment-text">${he.encode(text)}</p>
     <p class="film-details__comment-info">
-      <span class="film-details__comment-author">${autor}</span>
+      <span class="film-details__comment-author">${author}</span>
       <span class="film-details__comment-day">${dayjs(commentDate).format('YYYY/MM/DD HH:mm')}</span>
       <button class="film-details__comment-delete">Delete</button>
     </p>
@@ -90,7 +91,7 @@ const createPopupTemplate = (data, comments) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+            <img class="film-details__poster-img" src="${poster}" alt="">
   
             <p class="film-details__age">${age}+</p>
           </div>
@@ -114,11 +115,11 @@ const createPopupTemplate = (data, comments) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">${writers}</td>
+                <td class="film-details__cell">${writers.join(', ')}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">${actors}</td>
+                <td class="film-details__cell">${actors.join(', ')}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
@@ -126,7 +127,7 @@ const createPopupTemplate = (data, comments) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${duration}</td>
+                <td class="film-details__cell">${createMovieDuration(duration)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -222,7 +223,7 @@ export default class PopupView extends SmartView {
   }
 
   static parseDataToMovieComments = (commentsData, data) => {
-    const comments = [...commentsData, {id: nanoid(), text: data.newCommentText, emoji: data.newCommentEmoji, autor: 'unknown', commentDate: new Date()}];
+    const comments = [...commentsData, {id: nanoid(), text: data.newCommentText, emoji: data.newCommentEmoji, author: 'unknown', commentDate: new Date()}];
 
     return comments;
   }
@@ -310,23 +311,17 @@ export default class PopupView extends SmartView {
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this.saveScrollPosition();
     this._callback.favoriteClick();
-    this.setScrollPosition();
   }
 
   #watchlistClickHandler = (evt) => {
     evt.preventDefault();
-    this.saveScrollPosition();
     this._callback.watchlistClick();
-    this.setScrollPosition();
   }
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
-    this.saveScrollPosition();
     this._callback.watchedClick();
-    this.setScrollPosition();
   }
 
   setCommentDeleteButtonClickHandler = (callback) => {
@@ -344,7 +339,7 @@ export default class PopupView extends SmartView {
     const commentDateElement = delitedComment.querySelector('.film-details__comment-day');
     const commentAuthorElement = delitedComment.querySelector('.film-details__comment-author');
     const commentTextElement = delitedComment.querySelector('.film-details__comment-text');
-    const index = this._commentsData.findIndex((comment) => comment.text === commentTextElement.textContent && comment.autor === commentAuthorElement.textContent && dayjs(comment.commentDate).format('YYYY/MM/DD HH:mm') === commentDateElement.textContent);
+    const index = this._commentsData.findIndex((comment) => comment.text === commentTextElement.textContent && comment.author === commentAuthorElement.textContent && dayjs(comment.commentDate).format('YYYY/MM/DD HH:mm') === commentDateElement.textContent);
     this.saveScrollPosition();
 
     const commentsNumber = this._data.comments;
