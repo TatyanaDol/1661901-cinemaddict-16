@@ -4,9 +4,9 @@ import {FilterType} from '../model/filter-model.js';
 
 const createMenuStatisticAndFilterTemplate = (filters, currentFilterType) => {
 
-  const history = findFilter('History', filters);
-  const watchlist = findFilter('Watchlist', filters);
-  const favorites = findFilter('Favorites', filters);
+  const history = findFilter(FilterType.HISTORY, filters);
+  const watchlist = findFilter(FilterType.WATCHLIST, filters);
+  const favorites = findFilter(FilterType.FAVORITES, filters);
 
   return `<nav class="main-navigation">
   <div class="main-navigation__items">

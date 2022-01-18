@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
-
+import {createMovieDuration} from '../utils/utils.js';
 
 const SHORT_DESCRIPTION_NUMBER_OF_SYMBOLS = 140;
 
@@ -15,7 +15,7 @@ const createMovieCardTemplate = (card) => {
   const watchlistClassName = isInWatchlist ? 'film-card__controls-item--active' : '';
   const watchedClassName = isWatched ? 'film-card__controls-item--active' : '';
   const favoriteClassName = isFavorite ? 'film-card__controls-item--active' : '';
-  const isComments = comments ? `${comments  } comments` : '';
+  const isComments = comments ? `${comments.length  } comments` : '';
 
   return `<article class="film-card">
 <a class="film-card__link">
@@ -23,10 +23,10 @@ const createMovieCardTemplate = (card) => {
   <p class="film-card__rating">${rating}</p>
   <p class="film-card__info">
     <span class="film-card__year">${dayjs(releaseDate).format('YYYY')}</span>
-    <span class="film-card__duration">${duration}</span>
+    <span class="film-card__duration">${createMovieDuration(duration)}</span>
     <span class="film-card__genre">${genres[0]}</span>
   </p>
-  <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+  <img src="${poster}" alt="" class="film-card__poster">
   ${createShortDescription(description)}
   <span class="film-card__comments">${isComments}</span>
 </a>
@@ -37,7 +37,7 @@ const createMovieCardTemplate = (card) => {
 </div>
 </article>`;
 };
-
+// ./images/posters/
 export default class MovieCardView extends AbstractView {
   #card = null;
 
