@@ -172,18 +172,44 @@ export default class MovieCardPresenter {
         {...this.#card, isInWatchlist: !this.#card.isInWatchlist}, this.#comments, isPopup);
     }
 
-    #handleNewCommentsSubmit = (card, comments) => {
+    #handleNewCommentsSubmit = (card, comment) => {
+      const isPopup = true;
       this.#changeCardData(
         UserAction.ADD_COMMENT,
         UpdateType.PATCH,
-        card, comments);
+        card, comment, isPopup);
     }
 
     #handleCommentDelete = (card, comments) => {
+      const isPopup = true;
       this.#changeCardData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
-        card, comments);
+        card, comments, isPopup);
+    }
+
+    setSaving = () => {
+      this.#movieCardPopupComponent.updateData({
+        isSaving: true,
+      });
+    }
+
+    setDeleting = () => {
+      this.#movieCardPopupComponent.updateData({
+        isDeleting: true,
+      });
+    }
+
+    setAborting = (scrollPosition) => {
+      const resetForm = () => {
+        this.#movieCardPopupComponent.updateData({
+          isSaving: false,
+          isDeleting: false,
+        });
+        const newElementScroll = document.querySelector('.film-details');
+        newElementScroll.scrollTop = scrollPosition;
+      };
+      this.#movieCardPopupComponent.shake(resetForm);
     }
 
 }

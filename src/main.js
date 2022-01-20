@@ -8,9 +8,11 @@ import ApiService from './api-service';
 const AUTHORIZATION = 'Basic rftg78ijuytjhhnewtrwe34';
 const BASE_URL = 'https://16.ecmascript.pages.academy/cinemaddict';
 
-const movieModel = new MoviesModel(new ApiService(BASE_URL, AUTHORIZATION));
+const API_SERVISE = new ApiService(BASE_URL, AUTHORIZATION);
 
-const commentsModel = new CommentsModel(new ApiService(BASE_URL, AUTHORIZATION));
+const movieModel = new MoviesModel(API_SERVISE);
+
+const commentsModel = new CommentsModel(API_SERVISE);
 
 const filterModel = new FilterModel();
 

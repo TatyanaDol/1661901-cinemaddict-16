@@ -45,6 +45,7 @@ export default class MoviesModel extends AbstractObservable {
 
         this._notify(updateType, update, isPopupOpened);
       } catch(err) {
+        this._notifyShake(update);
         throw new Error('Can\'t update movie card');
       }
     }
