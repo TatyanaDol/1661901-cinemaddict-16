@@ -60,7 +60,7 @@ export default class CommentsModel extends AbstractObservable {
       }
     }
 
-    deleteMovieComment = async (updateType, update, card) => {
+    deleteMovieComment = async (updateType, update, card, commentId) => {
       const index = this.#movieComments.findIndex((comment) => comment.id === update.id);
 
       if (index === -1) {
@@ -76,7 +76,7 @@ export default class CommentsModel extends AbstractObservable {
 
         this._notify(updateType, card);
       } catch(err) {
-        this._notifyShake(card);
+        this._notifyShake(card, commentId);
         throw new Error('Can\'t delete comment');
       }
 

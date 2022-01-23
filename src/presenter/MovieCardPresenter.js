@@ -180,12 +180,12 @@ export default class MovieCardPresenter {
         card, comment, isPopup);
     }
 
-    #handleCommentDelete = (card, comments) => {
+    #handleCommentDelete = (card, comments, commentId) => {
       const isPopup = true;
       this.#changeCardData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
-        card, comments, isPopup);
+        card, comments, isPopup, commentId);
     }
 
     setSaving = () => {
@@ -200,16 +200,17 @@ export default class MovieCardPresenter {
       });
     }
 
-    setAborting = (scrollPosition) => {
+    setAborting = (scrollPosition, commentId) => {
       const resetForm = () => {
         this.#movieCardPopupComponent.updateData({
           isSaving: false,
           isDeleting: false,
         });
+        this.#movieCardPopupComponent.resetIdForDeletedComment();
         const newElementScroll = document.querySelector('.film-details');
         newElementScroll.scrollTop = scrollPosition;
       };
-      this.#movieCardPopupComponent.shake(resetForm);
+      this.#movieCardPopupComponent.shake(resetForm, commentId);
     }
 
 }

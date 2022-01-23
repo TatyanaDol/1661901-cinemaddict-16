@@ -101,7 +101,7 @@ export default class MovieListPresenter {
       }
     }
 
-    #handleViewAction = async (actionType, updateType, updatedCard, updatedComments, isPopupOpened) => {
+    #handleViewAction = async (actionType, updateType, updatedCard, updatedComments, isPopupOpened, commentId) => {
       if(isPopupOpened) {
         this.#elementScroll = document.querySelector('.film-details');
         this.#scrollPosition = this.#elementScroll.scrollTop;
@@ -120,18 +120,18 @@ export default class MovieListPresenter {
         case UserAction.DELETE_COMMENT:
           this.#cardPresenterMap.get(updatedCard.id).setDeleting();
 
-          this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard);
-          this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
+          this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard, commentId);
+          this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened, commentId);
 
           break;
       }
     }
 
-    #makeShake = (card) => {
+    #makeShake = (card, commentId) => {
       this.#elementScroll = document.querySelector('.film-details');
       this.#scrollPosition = this.#elementScroll.scrollTop;
 
-      this.#cardPresenterMap.get(card.id).setAborting(this.#scrollPosition);
+      this.#cardPresenterMap.get(card.id).setAborting(this.#scrollPosition, commentId);
     }
 
 

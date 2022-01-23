@@ -5,14 +5,19 @@ import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import ApiService from './api-service';
 
+export const MenuItem = {
+  FILTERS: 'FILTERS',
+  STATISTICS: 'STATISTICS',
+};
+
 const AUTHORIZATION = 'Basic rftg78ijuytjhhnewtrwe34';
 const BASE_URL = 'https://16.ecmascript.pages.academy/cinemaddict';
 
-const API_SERVISE = new ApiService(BASE_URL, AUTHORIZATION);
+const API_SERVICE = new ApiService(BASE_URL, AUTHORIZATION);
 
-const movieModel = new MoviesModel(API_SERVISE);
+const movieModel = new MoviesModel(API_SERVICE);
 
-const commentsModel = new CommentsModel(API_SERVISE);
+const commentsModel = new CommentsModel(API_SERVICE);
 
 const filterModel = new FilterModel();
 

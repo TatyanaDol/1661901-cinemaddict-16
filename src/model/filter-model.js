@@ -5,6 +5,7 @@ export const FilterType = {
   WATCHLIST: 'Watchlist',
   FAVORITES: 'Favorites',
   HISTORY: 'History',
+  STATISTICS: 'STATISTICS'
 };
 
 export default class FilterModel extends AbstractObservable {

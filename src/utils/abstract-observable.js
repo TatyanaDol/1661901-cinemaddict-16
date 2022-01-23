@@ -18,7 +18,7 @@ export default class AbstractObservable {
       this.#observers.forEach((observer) => observer(event, payload, checkPopup));
     }
 
-    _notifyShake(event, payload, checkPopup) {
-      this.#shakeObservers.forEach((observer) => observer(event, payload, checkPopup));
+    _notifyShake(payload, commentId) {
+      this.#shakeObservers.forEach((observer) => observer(payload, commentId));
     }
 }

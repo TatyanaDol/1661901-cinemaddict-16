@@ -16,11 +16,12 @@ const createGenresTemplate = (genres) => {
               </tr>`;
 };
 
-const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting) => `<section class="film-details__comments-wrap">
+const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting, idOFDeletedCommment) => `<section class="film-details__comments-wrap">
   <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${array.length}</span></h3>
 
   <ul class="film-details__comments-list" ${isSaving ? 'disabled' : ''}> ${array.map((comment) => {
-  const {text, emoji, author, commentDate} = comment;
+  const {id, text, emoji, author, commentDate} = comment;
+  const isDeletedComment = Boolean(comment.id === idOFDeletedCommment);
   return `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -30,7 +31,7 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
       <span class="film-details__comment-day">${dayjs(commentDate).format('YYYY/MM/DD HH:mm')}</span>
-      <button class="film-details__comment-delete" ${isDeleting ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+      <button id="${id}" class="film-details__comment-delete" ${isDeleting ? 'disabled' : ''}>${isDeletedComment ? 'Deleting...' : 'Delete'}</button>
     </p>
   </div>
 </li>
@@ -63,7 +64,7 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
   </div>
 </section>`;
 
-const createPopupTemplate = (data, comments) => {
+const createPopupTemplate = (data, comments, idOfDeletedCommment) => {
   const {title,
     originalTitle,
     poster,
@@ -156,7 +157,7 @@ const createPopupTemplate = (data, comments) => {
       </div>
   
       <div class="film-details__bottom-container">
-      ${createCommentsTemplate(comments, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting)}
+      ${createCommentsTemplate(comments, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting, idOfDeletedCommment)}
       </div>
     </form>
   </section>`;
@@ -168,6 +169,7 @@ export default class PopupView extends SmartView {
   _scrollPosition = 0;
   #elementScroll;
   #newElementScroll;
+  #idOfDeletedCommment = null;
 
   constructor(card, comments) {
     super();
@@ -182,7 +184,7 @@ export default class PopupView extends SmartView {
   }
 
   get template() {
-    return createPopupTemplate(this._data, this._commentsData, this._data.isSaving, this._data.isDeleting);
+    return createPopupTemplate(this._data, this._commentsData, this.#idOfDeletedCommment);
   }
 
   restoreHandlers() {
@@ -347,21 +349,18 @@ export default class PopupView extends SmartView {
       return;
     }
     evt.preventDefault();
-    const delitedComment = evt.target.parentElement.parentElement.parentElement;
-    const commentDateElement = delitedComment.querySelector('.film-details__comment-day');
-    const commentAuthorElement = delitedComment.querySelector('.film-details__comment-author');
-    const commentTextElement = delitedComment.querySelector('.film-details__comment-text');
-    const index = this._commentsData.findIndex((comment) => comment.text === commentTextElement.textContent && comment.author === commentAuthorElement.textContent && dayjs(comment.commentDate).format('YYYY/MM/DD HH:mm') === commentDateElement.textContent);
+    const index = this._commentsData.findIndex((comment) => comment.id === evt.target.id);
     this.saveScrollPosition();
-    const commentsId = this._data.comments;
+    const commentsId = [...this._data.comments];
+    this.#idOfDeletedCommment = commentsId.splice(index, 1).join('');
 
-    commentsId.splice(index, 1);
+    this._callback.deleteComment(PopupView.parseDataToMovie(this._data), this._commentsData[index], evt.target.id);
 
-    this._callback.deleteComment(PopupView.parseDataToMovie(this._data), this._commentsData[index]);
-    this.updateData({
-      comments: commentsId,
-    });
     this.setScrollPosition();
+  }
+
+  resetIdForDeletedComment = () => {
+    this.#idOfDeletedCommment = null;
   }
 
 }
