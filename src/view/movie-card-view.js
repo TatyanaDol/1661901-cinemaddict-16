@@ -15,7 +15,8 @@ const createMovieCardTemplate = (card) => {
   const watchlistClassName = isInWatchlist ? 'film-card__controls-item--active' : '';
   const watchedClassName = isWatched ? 'film-card__controls-item--active' : '';
   const favoriteClassName = isFavorite ? 'film-card__controls-item--active' : '';
-  const isComments = comments ? `${comments.length  } comments` : '';
+  const isComments = comments.length ? `${comments.length  } comments` : '';
+
 
   return `<article class="film-card">
 <a class="film-card__link">
@@ -37,7 +38,7 @@ const createMovieCardTemplate = (card) => {
 </div>
 </article>`;
 };
-// ./images/posters/
+
 export default class MovieCardView extends AbstractView {
   #card = null;
 

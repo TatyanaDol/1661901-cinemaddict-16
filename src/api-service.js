@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -66,6 +68,27 @@ export default class ApiService {
       return parsedResponse;
     }
 
+    addComment = async (movieCard, comment) => {
+      const response = await this.#load({
+        endPoint: `/comments/${movieCard.id}`,
+        method: Method.POST,
+        body: JSON.stringify(this.#adaptCommentDataToServer(comment)),
+        headers: new Headers({'Content-Type': 'application/json'})
+      });
+
+      const parsedResponse = await ApiService.parseResponse(response);
+
+      return parsedResponse;
+    }
+
+    deleteComment = async (comment) => {
+      const response = await this.#load({
+        endPoint:  `/comments/${comment.id}`,
+        method: Method.DELETE,
+      });
+      return response;
+    }
+
     #adaptMovieDataToServer = (movie) => {
       const adaptedMovie = {
         ...movie,
@@ -112,5 +135,19 @@ export default class ApiService {
       delete adaptedMovie.writers;
 
       return adaptedMovie;
+    }
+
+    #adaptCommentDataToServer = (comment) => {
+      const adaptedComment = {...comment,
+        emotion: comment.emoji,
+        comment: comment.text,
+        date: comment.commentDate.toISOString(),
+      };
+
+      delete adaptedComment.emoji;
+      delete adaptedComment.text;
+      delete adaptedComment.commentDate;
+
+      return adaptedComment;
     }
 }

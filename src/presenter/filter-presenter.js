@@ -89,6 +89,9 @@ export default class FilterPresenter {
       if (this.#filterModel.moviesFilter === filterType) {
         return;
       }
+      if (filterType ===  FilterType.STATISTICS) {
+        return;
+      }
 
       this.#filterModel.setMoviesFilter(UpdateType.MAJOR, filterType);
     }

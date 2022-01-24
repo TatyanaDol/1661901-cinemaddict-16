@@ -55,6 +55,8 @@ export default class MovieListPresenter {
       this.#movieModel.addObserver(this.#handleModelEvent);
       this.#commentsModel.addObserver(this.#handleModelEvent);
       this.#filterModel.addObserver(this.#handleModelEvent);
+      this.#commentsModel.addObserverShake(this.#makeShake);
+      this.#movieModel.addObserverShake(this.#makeShake);
 
     }
 
@@ -99,7 +101,7 @@ export default class MovieListPresenter {
       }
     }
 
-    #handleViewAction = (actionType, updateType, updatedCard, updatedComments, isPopupOpened) => {
+    #handleViewAction = async (actionType, updateType, updatedCard, updatedComments, isPopupOpened, commentId) => {
       if(isPopupOpened) {
         this.#elementScroll = document.querySelector('.film-details');
         this.#scrollPosition = this.#elementScroll.scrollTop;
@@ -109,22 +111,34 @@ export default class MovieListPresenter {
           this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
           break;
         case UserAction.ADD_COMMENT:
+          this.#cardPresenterMap.get(updatedCard.id).setSaving();
+
           this.#commentsModel.addMovieComment(updateType, updatedComments, updatedCard);
-          this.#movieModel.updateMovieCard(updateType, updatedCard);
+          this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
+
           break;
         case UserAction.DELETE_COMMENT:
-          this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard);
-          this.#movieModel.updateMovieCard(updateType, updatedCard);
+          this.#cardPresenterMap.get(updatedCard.id).setDeleting();
+
+          this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard, commentId);
+          this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened, commentId);
+
           break;
       }
     }
 
+    #makeShake = (card, commentId) => {
+      this.#elementScroll = document.querySelector('.film-details');
+      this.#scrollPosition = this.#elementScroll.scrollTop;
+
+      this.#cardPresenterMap.get(card.id).setAborting(this.#scrollPosition, commentId);
+    }
+
 
     #handleModelEvent = (updateType, data, isPopupOpened) => {
-
       switch (updateType) {
         case UpdateType.PATCH:
-          this.#cardPresenterMap.get(data.id).init(data);
+          this.#cardPresenterMap.get(data.id).init(data, this.#commentsModel.movieComments);
           break;
         case UpdateType.MINOR:
           this.#clearFullBoard();

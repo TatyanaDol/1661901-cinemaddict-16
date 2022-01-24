@@ -21,7 +21,7 @@ export default class CommentsModel extends AbstractObservable {
       } catch(err) {
         this.#movieComments = [];
       }
-      this._notify(UpdateType.COMMENTS, card);
+      this._notify(UpdateType.PATCH, card);
 
     }
 
@@ -47,25 +47,40 @@ export default class CommentsModel extends AbstractObservable {
       return this.#movieComments;
     }
 
-    addMovieComment = (updateType, update, card) => {
-      this.#movieComments = [...update
-      ];
-      this._notify(updateType, card);
+    addMovieComment = async (updateType, update, card) => {
+
+      try {
+        const response = await this.#apiService.addComment(card, update);
+        const newComment = response.comments.map(this.#adaptCommentDataToClient);
+        this.#movieComments = newComment;
+        this._notify(updateType, card);
+      } catch(err) {
+        this._notifyShake(card);
+        throw new Error('Can\'t add comment');
+      }
     }
 
-    deleteMovieComment = (updateType, update, card) => {
+    deleteMovieComment = async (updateType, update, card, commentId) => {
       const index = this.#movieComments.findIndex((comment) => comment.id === update.id);
 
       if (index === -1) {
         throw new Error('Can\'t delete unexisting comment');
       }
 
-      this.#movieComments = [
-        ...this.#movieComments.slice(0, index),
-        ...this.#movieComments.slice(index + 1),
-      ];
+      try {
+        await this.#apiService.deleteComment(update);
+        this.#movieComments = [
+          ...this.#movieComments.slice(0, index),
+          ...this.#movieComments.slice(index + 1),
+        ];
 
-      this._notify(updateType, card);
+        this._notify(updateType, card);
+      } catch(err) {
+        this._notifyShake(card, commentId);
+        throw new Error('Can\'t delete comment');
+      }
+
+
     }
 
 }

@@ -28,7 +28,7 @@ export default class MoviesModel extends AbstractObservable {
 
     }
 
-    updateMovieCard = async (updateType, update, isPopupOpened) => {
+    updateMovieCard = async (updateType, update, isPopupOpened, commentId) => {
       const index = this.#movieCards.findIndex((card) => card.id === update.id);
       if (index === -1) {
         throw new Error('Can\'t update unexisting movie card');
@@ -45,6 +45,7 @@ export default class MoviesModel extends AbstractObservable {
 
         this._notify(updateType, update, isPopupOpened);
       } catch(err) {
+        this._notifyShake(update, commentId);
         throw new Error('Can\'t update movie card');
       }
     }
