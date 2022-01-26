@@ -1,5 +1,5 @@
 import AbstractObservable from '../utils/abstract-observable.js';
-import {UpdateType} from '../presenter/MovieCardPresenter.js';
+import {UpdateType} from '../presenter/movie-card-presenter.js';
 
 export default class CommentsModel extends AbstractObservable {
 
@@ -55,7 +55,6 @@ export default class CommentsModel extends AbstractObservable {
         this.#movieComments = newComment;
         this._notify(updateType, card);
       } catch(err) {
-        this._notifyShake(card);
         throw new Error('Can\'t add comment');
       }
     }
@@ -79,7 +78,6 @@ export default class CommentsModel extends AbstractObservable {
         this._notifyShake(card, commentId);
         throw new Error('Can\'t delete comment');
       }
-
 
     }
 

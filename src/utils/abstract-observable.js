@@ -14,6 +14,10 @@ export default class AbstractObservable {
       this.#observers.delete(observer);
     }
 
+    removeShakeObserver(observer) {
+      this.#shakeObservers.delete(observer);
+    }
+
     _notify(event, payload, checkPopup) {
       this.#observers.forEach((observer) => observer(event, payload, checkPopup));
     }

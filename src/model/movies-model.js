@@ -1,5 +1,5 @@
 import AbstractObservable from '../utils/abstract-observable.js';
-import {UpdateType} from '../presenter/MovieCardPresenter.js';
+import {UpdateType} from '../presenter/movie-card-presenter.js';
 
 export default class MoviesModel extends AbstractObservable {
     #apiService = null;
@@ -28,7 +28,7 @@ export default class MoviesModel extends AbstractObservable {
 
     }
 
-    updateMovieCard = async (updateType, update, isPopupOpened, commentId) => {
+    updateMovieCard = async (updateType, update, isPopupOpened) => {
       const index = this.#movieCards.findIndex((card) => card.id === update.id);
       if (index === -1) {
         throw new Error('Can\'t update unexisting movie card');
@@ -43,9 +43,9 @@ export default class MoviesModel extends AbstractObservable {
           ...this.#movieCards.slice(index + 1),
         ];
 
-        this._notify(updateType, update, isPopupOpened);
+        this._notify(updateType, this.#movieCards[index], isPopupOpened);
+
       } catch(err) {
-        this._notifyShake(update, commentId);
         throw new Error('Can\'t update movie card');
       }
     }

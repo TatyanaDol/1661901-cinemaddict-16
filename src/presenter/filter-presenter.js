@@ -2,7 +2,7 @@ import MenuStatisticFilterView from '../view/menu-statistic-and-filter-view.js';
 import {SetPosition, render, remove, replace} from '../utils/render.js';
 import {FilterType} from '../model/filter-model.js';
 import {filter} from '../utils/filter.js';
-import {UpdateType} from '../presenter/MovieCardPresenter.js';
+import {UpdateType} from './movie-card-presenter.js';
 import UserRankView from '../view/user-rank-view.js';
 
 export default class FilterPresenter {
@@ -15,12 +15,16 @@ export default class FilterPresenter {
     #filterComponent = null;
     #rankComponent = null;
 
-    constructor(mainComtainer, filterModel, moviesModel, headerContainer) {
+    #handleFiltersAndStatisticClick = null;
+    #isStatisticActive = null;
+
+    constructor(mainComtainer, filterModel, moviesModel, headerContainer, handleFiltersAndStatisticClick) {
 
       this.#mainContainer = mainComtainer;
       this.#filterModel = filterModel;
       this.#moviesModel = moviesModel;
       this.#headerContainer = headerContainer;
+      this.#handleFiltersAndStatisticClick = handleFiltersAndStatisticClick;
 
       this.#moviesModel.addObserver(this.#handleModelEvent);
       this.#filterModel.addObserver(this.#handleModelEvent);
@@ -68,8 +72,8 @@ export default class FilterPresenter {
         remove(prevRankComponent);
       }
 
-      this.#filterComponent = new MenuStatisticFilterView(filters, this.#filterModel.moviesFilter);
-      this.#filterComponent.setMoviesFilterTypeClickHandler(this.#handleMovieFilterTypeChange);
+      this.#filterComponent = new MenuStatisticFilterView(filters, this.#filterModel.moviesFilter, this.#isStatisticActive);
+      this.#filterComponent.setMoviesFilterTypeClickHandler(this.#handleMovieFilterTypeChange, this.#handleFiltersAndStatisticClick);
 
       if (prevFilterComponent === null) {
         render(this.#mainContainer, this.#filterComponent, SetPosition.BEFOREEND);
@@ -85,14 +89,17 @@ export default class FilterPresenter {
       this.init();
     }
 
+
     #handleMovieFilterTypeChange = (filterType) => {
-      if (this.#filterModel.moviesFilter === filterType) {
+      if (this.#filterModel.moviesFilter === filterType && !this.#isStatisticActive) {
         return;
       }
       if (filterType ===  FilterType.STATISTICS) {
+        this.#isStatisticActive = true;
+        this.#filterModel.setMoviesFilter(UpdateType.STATISTICS);
         return;
       }
-
+      this.#isStatisticActive = false;
       this.#filterModel.setMoviesFilter(UpdateType.MAJOR, filterType);
     }
 

@@ -19,11 +19,8 @@ const Rating = {
   },
 };
 
-
-const createUserRankTemplate = (filters) => {
-  const historyFilterCount = findFilter(FilterType.HISTORY, filters).count;
+export const calculateUserRank = (historyFilterCount) => {
   let profileRating = '';
-
   if (historyFilterCount >= Rating.NOVICE.from && historyFilterCount <= Rating.NOVICE.to) {
     profileRating = 'Novice';
   }
@@ -33,6 +30,12 @@ const createUserRankTemplate = (filters) => {
   else if (historyFilterCount >= Rating.MOVIE_BUFF.from) {
     profileRating = 'Movie buff';
   }
+  return profileRating;
+};
+
+const createUserRankTemplate = (filters) => {
+  const historyFilterCount = findFilter(FilterType.HISTORY, filters).count;
+  const profileRating = calculateUserRank(historyFilterCount);
 
   return `<section class="header__profile profile">
     <p class="profile__rating">${profileRating}</p>

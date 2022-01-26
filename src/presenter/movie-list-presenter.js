@@ -3,15 +3,14 @@ import MovieListView from '../view/movie-list-view.js';
 import ShowMoreButtonView from '../view/show-button-view.js';
 import {SetPosition, render, remove} from '../utils/render.js';
 import EmptyMovieListView from '../view/movie-list-empty-view.js';
-import MovieCardPresenter from './MovieCardPresenter.js';
+import MovieCardPresenter from './movie-card-presenter.js';
 import {sortFilmsByRating, sortFilmsByDate} from '../utils/utils.js';
 import {SortType} from '../view/sort-view.js';
-import {UpdateType, UserAction} from './MovieCardPresenter.js';
+import {UpdateType, UserAction} from './movie-card-presenter.js';
 import {filter} from '../utils/filter.js';
 import {FilterType} from '../model/filter-model.js';
 import LoadingFilmsView from '../view/loading-view.js';
 import MovieCountView from '../view/movies-count-view.js';
-
 
 const CARD_COUNT_PER_STEP = 5;
 
@@ -34,6 +33,7 @@ export default class MovieListPresenter {
     #emptyMovieListComponent = null;
     #loadingFilmsComponent = new LoadingFilmsView();
     #movieCountComponent = null;
+    #statisticComponent = null;
 
     #renderedCardsCount = CARD_COUNT_PER_STEP;
     #cardPresenterMap = new Map();
@@ -51,12 +51,6 @@ export default class MovieListPresenter {
       this.#movieModel = movieModel;
       this.#commentsModel = commentsModel;
       this.#filterModel = filterModel;
-
-      this.#movieModel.addObserver(this.#handleModelEvent);
-      this.#commentsModel.addObserver(this.#handleModelEvent);
-      this.#filterModel.addObserver(this.#handleModelEvent);
-      this.#commentsModel.addObserverShake(this.#makeShake);
-      this.#movieModel.addObserverShake(this.#makeShake);
 
     }
 
@@ -82,6 +76,12 @@ export default class MovieListPresenter {
     init = () => {
 
       this.#renderFullBoard();
+
+      this.#movieModel.addObserver(this.#handleModelEvent);
+      this.#commentsModel.addObserver(this.#handleModelEvent);
+      this.#filterModel.addObserver(this.#handleModelEvent);
+      this.#commentsModel.addObserverShake(this.#makeShake);
+      this.#movieModel.addObserverShake(this.#makeShake);
 
     }
 
@@ -112,16 +112,22 @@ export default class MovieListPresenter {
           break;
         case UserAction.ADD_COMMENT:
           this.#cardPresenterMap.get(updatedCard.id).setSaving();
-
-          this.#commentsModel.addMovieComment(updateType, updatedComments, updatedCard);
-          this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
+          try {
+            await this.#commentsModel.addMovieComment(updateType, updatedComments, updatedCard);
+            await this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
+          } catch(err) {
+            this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition);
+          }
 
           break;
         case UserAction.DELETE_COMMENT:
           this.#cardPresenterMap.get(updatedCard.id).setDeleting();
-
-          this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard, commentId);
-          this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened, commentId);
+          try {
+            await this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard, commentId);
+            await this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened, commentId);
+          } catch(err) {
+            this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
+          }
 
           break;
       }
@@ -161,9 +167,6 @@ export default class MovieListPresenter {
           this.#isFilmsLoading = false;
           remove(this.#loadingFilmsComponent);
           this.#renderFullBoard();
-          break;
-        case UpdateType.COMMENTS:
-          this.#cardPresenterMap.get(data.id).init(data, this.#commentsModel.movieComments);
           break;
       }
 
@@ -234,6 +237,7 @@ export default class MovieListPresenter {
       remove(this.#movieListComponent);
       remove(this.#loadingFilmsComponent);
       remove(this.#movieCountComponent);
+      remove(this.#statisticComponent);
 
       if (this.#emptyMovieListComponent) {
         remove(this.#emptyMovieListComponent);
@@ -290,6 +294,17 @@ export default class MovieListPresenter {
       }
       this.#renderMovieCount();
 
+
+    }
+
+    destroyMovieListPresenter = () => {
+      this.#clearFullBoard({resetRenderedCardsCount: true, resetSortType: true});
+
+      this.#movieModel.removeObserver(this.#handleModelEvent);
+      this.#commentsModel.removeObserver(this.#handleModelEvent);
+      this.#filterModel.removeObserver(this.#handleModelEvent);
+      this.#commentsModel.removeShakeObserver(this.#makeShake);
+      this.#movieModel.removeShakeObserver(this.#makeShake);
 
     }
 
