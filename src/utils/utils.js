@@ -31,6 +31,8 @@ export function getRandomArrayFromArray (array, num) {
 export const sortFilmsByRating = (cardA, cardB) => cardB.rating - cardA.rating;
 export const sortFilmsByDate = (cardA, cardB) => cardB.releaseDate - cardA.releaseDate;
 
+export const sortFilmsByCommentsNumber = (cardA, cardB) => cardB.comments.length - cardA.comments.length;
+
 export const createMovieDuration = (durationFull, isOnlyHours, isOnlyMinutes) => {
   const hours = Math.trunc(durationFull / 60);
   const minutes = durationFull - hours * 60;
