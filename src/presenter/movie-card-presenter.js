@@ -13,7 +13,7 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
-  COMMENTS: 'COMMENTS'
+  STATISTICS: 'STATISTICS',
 };
 
 export default class MovieCardPresenter {

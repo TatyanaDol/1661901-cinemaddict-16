@@ -57,7 +57,7 @@ export default class ApiService {
 
     updateMovie = async (movieCard) => {
       const response = await this.#load({
-        endPoint: `/movies/${movieCard.id}`,
+        endPoint: `movies/${movieCard.id}`,
         method: Method.PUT,
         body: JSON.stringify(this.#adaptMovieDataToServer(movieCard)),
         headers: new Headers({'Content-Type': 'application/json'}),
@@ -70,7 +70,7 @@ export default class ApiService {
 
     addComment = async (movieCard, comment) => {
       const response = await this.#load({
-        endPoint: `/comments/${movieCard.id}`,
+        endPoint: `comments/${movieCard.id}`,
         method: Method.POST,
         body: JSON.stringify(this.#adaptCommentDataToServer(comment)),
         headers: new Headers({'Content-Type': 'application/json'})
@@ -83,7 +83,7 @@ export default class ApiService {
 
     deleteComment = async (comment) => {
       const response = await this.#load({
-        endPoint:  `/comments/${comment.id}`,
+        endPoint:  `comments/${comment.id}`,
         method: Method.DELETE,
       });
       return response;
@@ -133,6 +133,7 @@ export default class ApiService {
       delete adaptedMovie.poster;
       delete adaptedMovie.title;
       delete adaptedMovie.writers;
+      delete adaptedMovie.watchingDate;
 
       return adaptedMovie;
     }

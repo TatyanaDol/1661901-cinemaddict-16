@@ -16,6 +16,10 @@ get moviesFilter() {
 }
 
 setMoviesFilter = (updateType, filter) => {
+  if(!filter) {
+    this._notify(updateType);
+    return;
+  }
   this.#filter = filter;
   this._notify(updateType, filter);
 }

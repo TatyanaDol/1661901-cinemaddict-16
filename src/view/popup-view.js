@@ -16,12 +16,12 @@ const createGenresTemplate = (genres) => {
               </tr>`;
 };
 
-const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting, idOFDeletedCommment) => `<section class="film-details__comments-wrap">
+const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting, idOfDeletedCommment) => `<section class="film-details__comments-wrap">
   <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${array.length}</span></h3>
 
   <ul class="film-details__comments-list" ${isSaving ? 'disabled' : ''}> ${array.map((comment) => {
   const {id, text, emoji, author, commentDate} = comment;
-  const isDeletedComment = Boolean(comment.id === idOFDeletedCommment);
+  const isDeletedComment = Boolean(comment.id === idOfDeletedCommment);
   return `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -275,13 +275,8 @@ export default class PopupView extends SmartView {
     if(evt.metaKey && evt.keyCode === 13 || evt.ctrlKey && evt.keyCode === 13) {
       evt.preventDefault();
       this.saveScrollPosition();
-      const commentsId = this._data.comments;
       const newComments = PopupView.parseDataToMovieComments(this._commentsData, this._data);
       const brandNewComment = newComments[newComments.length - 1];
-      commentsId.push(brandNewComment.id);
-      this.updateData({
-        comments: commentsId,
-      }, true);
       this._callback.commentsSubmit(PopupView.parseDataToMovie(this._data), brandNewComment);
       this.setScrollPosition();
     }
@@ -351,8 +346,7 @@ export default class PopupView extends SmartView {
     evt.preventDefault();
     const index = this._commentsData.findIndex((comment) => comment.id === evt.target.id);
     this.saveScrollPosition();
-    const commentsId = [...this._data.comments];
-    this.#idOfDeletedCommment = commentsId.splice(index, 1).join('');
+    this.#idOfDeletedCommment = evt.target.id;
 
     this._callback.deleteComment(PopupView.parseDataToMovie(this._data), this._commentsData[index], evt.target.id);
 
