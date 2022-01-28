@@ -164,15 +164,7 @@ export default class MovieListPresenter {
             await this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened, commentId);
           } catch(err) {
 
-            if(this.#cardPresenterMap.has(updatedCard.id)) {
-              this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
-            }
-            if(this.#topRatedCardPresenters.has(updatedCard.id)) {
-              this.#topRatedCardPresenters.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
-            }
-            if (this.#mostCommentedCardPresenters.has(updatedCard.id)) {
-              this.#mostCommentedCardPresenters.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
-            }
+            this.#makeShake(updatedCard, commentId);
           }
 
           break;
