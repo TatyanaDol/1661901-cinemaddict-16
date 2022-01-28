@@ -117,7 +117,6 @@ export default class MovieListPresenter {
           this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
           break;
         case UserAction.ADD_COMMENT:
-          // this.#cardPresenterMap.get(updatedCard.id).setSaving();
 
           if(this.#cardPresenterMap.has(updatedCard.id)) {
             this.#cardPresenterMap.get(updatedCard.id).setSaving();
@@ -134,7 +133,6 @@ export default class MovieListPresenter {
             await this.#commentsModel.addMovieComment(updateType, updatedComments, updatedCard);
             await this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened);
           } catch(err) {
-            // this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition);
 
             if(this.#cardPresenterMap.has(updatedCard.id)) {
               this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition);
@@ -150,7 +148,6 @@ export default class MovieListPresenter {
 
           break;
         case UserAction.DELETE_COMMENT:
-          // this.#cardPresenterMap.get(updatedCard.id).setDeleting();
 
           if(this.#cardPresenterMap.has(updatedCard.id)) {
             this.#cardPresenterMap.get(updatedCard.id).setDeleting();
@@ -160,20 +157,17 @@ export default class MovieListPresenter {
           }
           if (this.#mostCommentedCardPresenters.has(updatedCard.id)) {
             this.#mostCommentedCardPresenters.get(updatedCard.id).setDeleting();
-
           }
 
           try {
             await this.#commentsModel.deleteMovieComment(updateType, updatedComments, updatedCard, commentId);
             await this.#movieModel.updateMovieCard(updateType, updatedCard, isPopupOpened, commentId);
           } catch(err) {
-            // this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
 
             if(this.#cardPresenterMap.has(updatedCard.id)) {
               this.#cardPresenterMap.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
             }
             if(this.#topRatedCardPresenters.has(updatedCard.id)) {
-              console.log(commentId);
               this.#topRatedCardPresenters.get(updatedCard.id).setAborting(this.#scrollPosition, commentId);
             }
             if (this.#mostCommentedCardPresenters.has(updatedCard.id)) {
@@ -189,7 +183,16 @@ export default class MovieListPresenter {
       this.#elementScroll = document.querySelector('.film-details');
       this.#scrollPosition = this.#elementScroll.scrollTop;
 
-      this.#cardPresenterMap.get(card.id).setAborting(this.#scrollPosition, commentId);
+      if(this.#cardPresenterMap.has(card.id)) {
+        this.#cardPresenterMap.get(card.id).setAborting(this.#scrollPosition, commentId);
+      }
+      if(this.#topRatedCardPresenters.has(card.id)) {
+        this.#topRatedCardPresenters.get(card.id).setAborting(this.#scrollPosition, commentId);
+      }
+      if (this.#mostCommentedCardPresenters.has(card.id)) {
+        this.#mostCommentedCardPresenters.get(card.id).setAborting(this.#scrollPosition, commentId);
+      }
+
     }
 
 
@@ -204,7 +207,6 @@ export default class MovieListPresenter {
           }
           if (this.#mostCommentedCardPresenters.has(data.id)) {
             this.#mostCommentedCardPresenters.get(data.id).init(data, this.#commentsModel.movieComments);
-
           }
           break;
         case UpdateType.MINOR:
@@ -212,7 +214,13 @@ export default class MovieListPresenter {
           this.#renderFullBoard();
           if(this.movieCards.find((card) => card.id === data.id)) {
             if(isPopupOpened) {
-              this.#cardPresenterMap.get(data.id).showPopup();
+              if(this.#cardPresenterMap.has(data.id)) {
+                this.#cardPresenterMap.get(data.id).showPopup();
+              } else if (this.#topRatedCardPresenters.has(data.id)) {
+                this.#topRatedCardPresenters.get(data.id).showPopup();
+              } else if (this.#mostCommentedCardPresenters.has(data.id)) {
+                this.#mostCommentedCardPresenters.get(data.id).showPopup();
+              }
             }
           } else {
             if(isPopupOpened) {
@@ -362,7 +370,7 @@ export default class MovieListPresenter {
 
     }
 
-    #renderMostCommented = (movieCards) => {
+    #renderMostCommentedMovieCards = (movieCards) => {
 
       if(movieCards.length === 0) {
         return;
@@ -417,7 +425,7 @@ export default class MovieListPresenter {
 
       this.#renderTopRatedMovieCards(cards);
 
-      this.#renderMostCommented(cards);
+      this.#renderMostCommentedMovieCards(cards);
 
     }
 

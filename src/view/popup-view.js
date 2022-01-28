@@ -25,7 +25,6 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
   <ul class="film-details__comments-list" ${isSaving ? 'disabled' : ''}> ${array.map((comment) => {
   const {id, text, emoji, author, commentDate} = comment;
   const isDeletedComment = Boolean(comment.id === idOfDeletedCommment);
-
   return `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -246,7 +245,7 @@ export default class PopupView extends SmartView {
 
   resetPopup = () => {
     this.updateData(
-      PopupView.parseMovieToData(this._data),
+      PopupView.parseMovieToData(this._data), true
     );
   }
 
