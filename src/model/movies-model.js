@@ -1,14 +1,19 @@
 import AbstractObservable from '../utils/abstract-observable.js';
 import {UpdateType} from '../presenter/movie-card-presenter.js';
+import {sortFilmsByCommentsNumber} from '../utils/utils.js';
+import {filter} from '../utils/filter.js';
+
 
 export default class MoviesModel extends AbstractObservable {
     #apiService = null;
+    #filterModel = null;
     #movieCards = [];
+    #mostCommentedCards = [];
 
-    constructor(apiService) {
+    constructor(apiService, filterModel) {
       super();
       this.#apiService = apiService;
-
+      this.#filterModel = filterModel;
     }
 
     get movieCards() {
@@ -20,6 +25,7 @@ export default class MoviesModel extends AbstractObservable {
       try {
         const movies = await this.#apiService.movies;
         this.#movieCards = movies.map(this.#adaptMovieDataToClient);
+
       } catch(err) {
         this.#movieCards = [];
       }
@@ -29,6 +35,11 @@ export default class MoviesModel extends AbstractObservable {
     }
 
     updateMovieCard = async (updateType, update, isPopupOpened) => {
+
+      const filteredMovieCards = filter[this.#filterModel.moviesFilter](this.#movieCards);
+      const sortedCards = [...filteredMovieCards].sort(sortFilmsByCommentsNumber);
+      const mostCommentedCards = [sortedCards[0], sortedCards[1]];
+
       const index = this.#movieCards.findIndex((card) => card.id === update.id);
       if (index === -1) {
         throw new Error('Can\'t update unexisting movie card');
@@ -42,6 +53,14 @@ export default class MoviesModel extends AbstractObservable {
           updatedMovieCard,
           ...this.#movieCards.slice(index + 1),
         ];
+
+        const afterUpdateFilteredCards = filter[this.#filterModel.moviesFilter](this.#movieCards);
+        const afterUpdateSortedCards = [...afterUpdateFilteredCards].sort(sortFilmsByCommentsNumber);
+        const afterUpdateMostCommentedCards = [afterUpdateSortedCards[0], afterUpdateSortedCards[1]];
+        if(!(mostCommentedCards.find((card) => card.id === afterUpdateMostCommentedCards[0].id) && this.#mostCommentedCards.find((card) => card.id === afterUpdateMostCommentedCards[1].id))) {
+          this._notify(UpdateType.MINOR, this.#movieCards[index], isPopupOpened);
+          return;
+        }
 
         this._notify(updateType, this.#movieCards[index], isPopupOpened);
 
