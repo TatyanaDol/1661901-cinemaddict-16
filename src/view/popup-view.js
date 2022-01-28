@@ -3,6 +3,9 @@ import SmartView from './smart-view.js';
 import {nanoid} from 'nanoid';
 import he from 'he';
 import {createMovieDuration} from '../utils/utils.js';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const COMMENT_AUTHOR = 'Emma Li';
 
@@ -30,7 +33,7 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
     <p class="film-details__comment-text">${he.encode(text)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
-      <span class="film-details__comment-day">${dayjs(commentDate).format('YYYY/MM/DD HH:mm')}</span>
+      <span class="film-details__comment-day">${dayjs().to(dayjs(commentDate))}</span>
       <button id="${id}" class="film-details__comment-delete" ${isDeleting ? 'disabled' : ''}>${isDeletedComment ? 'Deleting...' : 'Delete'}</button>
     </p>
   </div>
@@ -242,7 +245,7 @@ export default class PopupView extends SmartView {
 
   resetPopup = () => {
     this.updateData(
-      PopupView.parseMovieToData(this._data),
+      PopupView.parseMovieToData(this._data), true
     );
   }
 

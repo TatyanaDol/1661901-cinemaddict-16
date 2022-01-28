@@ -17,11 +17,11 @@ const BASE_URL = 'https://16.ecmascript.pages.academy/cinemaddict';
 
 const API_SERVICE = new ApiService(BASE_URL, AUTHORIZATION);
 
-const movieModel = new MoviesModel(API_SERVICE);
+const filterModel = new FilterModel();
+
+const movieModel = new MoviesModel(API_SERVICE, filterModel);
 
 const commentsModel = new CommentsModel(API_SERVICE);
-
-const filterModel = new FilterModel();
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
