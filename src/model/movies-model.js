@@ -57,7 +57,12 @@ export default class MoviesModel extends AbstractObservable {
         const afterUpdateFilteredCards = filter[this.#filterModel.moviesFilter](this.#movieCards);
         const afterUpdateSortedCards = [...afterUpdateFilteredCards].sort(sortFilmsByCommentsNumber);
         const afterUpdateMostCommentedCards = [afterUpdateSortedCards[0], afterUpdateSortedCards[1]];
-        if(!(mostCommentedCards.find((card) => card.id === afterUpdateMostCommentedCards[0].id) && this.#mostCommentedCards.find((card) => card.id === afterUpdateMostCommentedCards[1].id))) {
+        if(afterUpdateMostCommentedCards[0]) {
+          if(!(mostCommentedCards.find((card) => card.id === afterUpdateMostCommentedCards[0].id) && this.#mostCommentedCards.find((card) => card.id === afterUpdateMostCommentedCards[1].id))) {
+            this._notify(UpdateType.MINOR, this.#movieCards[index], isPopupOpened);
+            return;
+          }
+        } else {
           this._notify(UpdateType.MINOR, this.#movieCards[index], isPopupOpened);
           return;
         }

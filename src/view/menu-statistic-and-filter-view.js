@@ -42,7 +42,13 @@ export default class MenuStatisticFilterView extends AbstractView {
   }
 
   #moviesFilterTypeClickHandler = (evt) => {
-    if(evt.target.tagName !== 'A') {
+
+    if(evt.target.tagName !== 'A' ) {
+      if(evt.target.parentElement.tagName === 'A') {
+        evt.preventDefault();
+        this._callback.moviesFilterTypeChange(evt.target.parentElement.dataset.filterType);
+        this._callback.StatOrFilmsMenuChange(evt.target.parentElement.dataset.filterType);
+      }
       return;
     }
     evt.preventDefault();
