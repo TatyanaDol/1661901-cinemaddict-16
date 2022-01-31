@@ -1,4 +1,4 @@
-import MenuStatisticFilterView from '../view/menu-statistic-and-filter-view.js';
+import MenuStatisticFilterView from '../view/menu-statistic-filter-view.js';
 import {SetPosition, render, remove, replace} from '../utils/render.js';
 import {FilterType} from '../model/filter-model.js';
 import {filter} from '../utils/filter.js';

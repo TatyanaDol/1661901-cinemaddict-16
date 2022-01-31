@@ -25,17 +25,19 @@ export default class MovieCardPresenter {
     #footerContainer = null;
     #changeCardData = null;
     #closeOldCardPopup = null;
+    #resetScroll = null;
 
     #card = null;
     #comments = null;
     #commentsModel = null;
 
-    constructor(filmsListContainer, footerContainer, changeCardData, handleCloseOldCardPopup, commentsModel) {
+    constructor(filmsListContainer, footerContainer, changeCardData, handleCloseOldCardPopup, commentsModel, resetScroll) {
       this.#filmsListContainer = filmsListContainer;
       this.#footerContainer = footerContainer;
       this.#changeCardData = changeCardData;
       this.#closeOldCardPopup = handleCloseOldCardPopup;
       this.#commentsModel = commentsModel;
+      this.#resetScroll = resetScroll;
     }
 
     init = (card, comments) => {
@@ -104,6 +106,7 @@ export default class MovieCardPresenter {
     }
 
     #closeCardPopup = () => {
+      this.#resetScroll();
       this.#movieCardPopupComponent.resetPopup();
       this.#bodyElement.classList.remove('hide-overflow');
       this.#movieCardPopupComponent.element.remove();

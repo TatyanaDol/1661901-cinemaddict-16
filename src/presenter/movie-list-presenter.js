@@ -1,15 +1,15 @@
 import SortView from '../view/sort-view.js';
 import MovieListView from '../view/movie-list-view.js';
-import ShowMoreButtonView from '../view/show-button-view.js';
+import ShowMoreButtonView from '../view/show-more-button-view.js';
 import {SetPosition, render, remove} from '../utils/render.js';
-import EmptyMovieListView from '../view/movie-list-empty-view.js';
+import EmptyMovieListView from '../view/empty-movie-list-view.js';
 import MovieCardPresenter from './movie-card-presenter.js';
 import {sortFilmsByRating, sortFilmsByDate, sortFilmsByCommentsNumber} from '../utils/utils.js';
 import {SortType} from '../view/sort-view.js';
 import {UpdateType, UserAction} from './movie-card-presenter.js';
 import {filter} from '../utils/filter.js';
 import {FilterType} from '../model/filter-model.js';
-import LoadingFilmsView from '../view/loading-view.js';
+import LoadingFilmsView from '../view/loading-films-view.js';
 import MovieCountView from '../view/movies-count-view.js';
 import TopRatedView from '../view/top-rated-view.js';
 import MostCommentedView from '../view/most-commented-view.js';
@@ -238,6 +238,11 @@ export default class MovieListPresenter {
 
     }
 
+    #resetScroll = () => {
+      this.#scrollPosition = null;
+
+    }
+
     #renderSort = () => {
       this.#moviesSortComponent = new SortView(this.#currentMovieSortType);
       this.#moviesSortComponent.setMovieSortChangeHandler(this.#handleMovieSortChange);
@@ -246,7 +251,7 @@ export default class MovieListPresenter {
 
     #renderCard = (card) => {
 
-      const cardPresenter = new MovieCardPresenter(this.#filmsListContainer, this.#footerContainer, this.#handleViewAction, this.#handleCloseOldCardPopup, this.#commentsModel);
+      const cardPresenter = new MovieCardPresenter(this.#filmsListContainer, this.#footerContainer, this.#handleViewAction, this.#handleCloseOldCardPopup, this.#commentsModel, this.#resetScroll);
       cardPresenter.init(card);
 
       this.#cardPresenterMap.set(card.id, cardPresenter);
@@ -353,7 +358,7 @@ export default class MovieListPresenter {
 
       topRatedMovies.forEach((movieCard) => {
 
-        const cardPresenter = new MovieCardPresenter(topRatedMoviesListContainer, this.#footerContainer, this.#handleViewAction, this.#handleCloseOldCardPopup, this.#commentsModel);
+        const cardPresenter = new MovieCardPresenter(topRatedMoviesListContainer, this.#footerContainer, this.#handleViewAction, this.#handleCloseOldCardPopup, this.#commentsModel, this.#resetScroll);
         cardPresenter.init(movieCard);
 
         this.#topRatedCardPresenters.set(movieCard.id, cardPresenter);
@@ -383,7 +388,7 @@ export default class MovieListPresenter {
 
       mostCommentedMovies.forEach((movieCard) => {
 
-        const cardPresenter = new MovieCardPresenter(mostCommentedMoviesListContainer, this.#footerContainer, this.#handleViewAction, this.#handleCloseOldCardPopup, this.#commentsModel);
+        const cardPresenter = new MovieCardPresenter(mostCommentedMoviesListContainer, this.#footerContainer, this.#handleViewAction, this.#handleCloseOldCardPopup, this.#commentsModel, this.#resetScroll);
         cardPresenter.init(movieCard);
 
         this.#mostCommentedCardPresenters.set(movieCard.id, cardPresenter);

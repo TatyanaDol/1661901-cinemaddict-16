@@ -22,10 +22,10 @@ const createGenresTemplate = (genres) => {
 const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChecked, isSaving, isDeleting, idOfDeletedCommment) => `<section class="film-details__comments-wrap">
   <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${array.length}</span></h3>
 
-  <ul class="film-details__comments-list" ${isSaving ? 'disabled' : ''}> ${array.map((comment) => {
-  const {id, text, emoji, author, commentDate} = comment;
-  const isDeletedComment = Boolean(comment.id === idOfDeletedCommment);
-  return `<li class="film-details__comment">
+  <ul class="film-details__comments-list"> ${array.map((comment) => {
+    const {id, text, emoji, author, commentDate} = comment;
+    const isDeletedComment = Boolean(comment.id === idOfDeletedCommment);
+    return `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
   </span>
@@ -39,13 +39,13 @@ const createCommentsTemplate = (array, newCommentEmoji, newCommentText, emojiChe
   </div>
 </li>
 `;}
-).join('')}
+  ).join('')}
   </ul>
 
-  <div class="film-details__new-comment" ${isSaving ? 'disabled' : ''}>
-    <div class="film-details__add-emoji-label" ${isSaving ? 'disabled' : ''}>
+  <div class="film-details__new-comment">
+    <div class="film-details__add-emoji-label">
     ${newCommentEmoji ? `<img src="images/emoji/${newCommentEmoji}.png" width="55" height="55" alt="emoji-${newCommentEmoji}">` : ''}
-    <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${newCommentEmoji}" value="${newCommentEmoji}"></input> 
+    <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${newCommentEmoji}" value="${newCommentEmoji}"  ${isSaving ? 'disabled' : ''}></input> 
     </div>
 
     <label class="film-details__comment-label" ${isSaving ? 'disabled' : ''}>
@@ -190,6 +190,16 @@ export default class PopupView extends SmartView {
     return createPopupTemplate(this._data, this._commentsData, this.#idOfDeletedCommment);
   }
 
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list')
+      .addEventListener('click', this.#emojiClickHandler);
+
+    this.element.querySelector('.film-details__comment-input')
+      .addEventListener('input', this.#commentInputHandler);
+
+  }
+
   restoreHandlers() {
     this.#setInnerHandlers();
     this.setCloseButtonClickHandler(this._callback.closeButtonClick);
@@ -200,53 +210,26 @@ export default class PopupView extends SmartView {
     this.setCommentDeleteButtonClickHandler(this._callback.deleteComment);
   }
 
-  #setInnerHandlers = () => {
-    this.element.querySelector('.film-details__emoji-list')
-      .addEventListener('click', this.#handleEmojiClick);
-
-    this.element.querySelector('.film-details__comment-input')
-      .addEventListener('input', this.#commentInputHandler);
-
+  saveScrollPosition = () => {
+    this.#elementScroll = document.querySelector('.film-details');
+    this._scrollPosition = this.#elementScroll.scrollTop;
   }
 
-  static parseMovieToData = (card) => ({...card,
-    isSaving: false,
-    isDeleting: false,
-    newCommentEmoji: '',
-    newCommentText: '',
-    emojiChecked: {
-      smile: false,
-      puke: false,
-      angry: false,
-      sleeping: false,
-    },
-  });
-
-  static parseMovieCommentsToData = (comments) => ([...comments
-  ]);
-
-  static parseDataToMovie = (data) => {
-    const card = {...data};
-
-    delete card.newCommentEmoji;
-    delete card.newCommentText;
-    delete card.emojiChecked;
-    delete card.isSaving;
-    delete card.isDeleting;
-
-    return card;
-  }
-
-  static parseDataToMovieComments = (commentsData, data) => {
-    const comments = [...commentsData, {id: nanoid(), text: data.newCommentText, emoji: data.newCommentEmoji, author: COMMENT_AUTHOR, commentDate: new Date()}];
-
-    return comments;
+  setScrollPosition = () => {
+    this.#newElementScroll = document.querySelector('.film-details');
+    if(this.#newElementScroll) {
+      this.#newElementScroll.scrollTop = this._scrollPosition;
+    }
   }
 
   resetPopup = () => {
     this.updateData(
       PopupView.parseMovieToData(this._data), true
     );
+  }
+
+  resetIdForDeletedComment = () => {
+    this.#idOfDeletedCommment = null;
   }
 
   #commentInputHandler = (evt) => {
@@ -256,7 +239,7 @@ export default class PopupView extends SmartView {
     }, true);
   }
 
-  #handleEmojiClick = (evt) => {
+  #emojiClickHandler = (evt) => {
     if (evt.target.value) {
 
       this.saveScrollPosition();
@@ -271,10 +254,10 @@ export default class PopupView extends SmartView {
   setNewCommentsSubmit = (callback) => {
     this._callback.commentsSubmit = callback;
     this.element.querySelector('.film-details__comment-input')
-      .addEventListener('keydown', this.#onEnterKeyDown);
+      .addEventListener('keydown', this.#commentFormSubmitHandler);
   }
 
-  #onEnterKeyDown = (evt) => {
+  #commentFormSubmitHandler = (evt) => {
     if(evt.metaKey && evt.keyCode === 13 || evt.ctrlKey && evt.keyCode === 13) {
       evt.preventDefault();
       this.saveScrollPosition();
@@ -282,18 +265,6 @@ export default class PopupView extends SmartView {
       const brandNewComment = newComments[newComments.length - 1];
       this._callback.commentsSubmit(PopupView.parseDataToMovie(this._data), brandNewComment);
       this.setScrollPosition();
-    }
-  }
-
-  saveScrollPosition = () => {
-    this.#elementScroll = document.querySelector('.film-details');
-    this._scrollPosition = this.#elementScroll.scrollTop;
-  }
-
-  setScrollPosition = () => {
-    this.#newElementScroll = document.querySelector('.film-details');
-    if(this.#newElementScroll) {
-      this.#newElementScroll.scrollTop = this._scrollPosition;
     }
   }
 
@@ -356,8 +327,39 @@ export default class PopupView extends SmartView {
     this.setScrollPosition();
   }
 
-  resetIdForDeletedComment = () => {
-    this.#idOfDeletedCommment = null;
+
+  static parseMovieToData = (card) => ({...card,
+    isSaving: false,
+    isDeleting: false,
+    newCommentEmoji: '',
+    newCommentText: '',
+    emojiChecked: {
+      smile: false,
+      puke: false,
+      angry: false,
+      sleeping: false,
+    },
+  });
+
+  static parseMovieCommentsToData = (comments) => ([...comments
+  ]);
+
+  static parseDataToMovie = (data) => {
+    const card = {...data};
+
+    delete card.newCommentEmoji;
+    delete card.newCommentText;
+    delete card.emojiChecked;
+    delete card.isSaving;
+    delete card.isDeleting;
+
+    return card;
+  }
+
+  static parseDataToMovieComments = (commentsData, data) => {
+    const comments = [...commentsData, {id: nanoid(), text: data.newCommentText, emoji: data.newCommentEmoji, author: COMMENT_AUTHOR, commentDate: new Date()}];
+
+    return comments;
   }
 
 }

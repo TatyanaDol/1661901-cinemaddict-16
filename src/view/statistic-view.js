@@ -10,6 +10,11 @@ import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isBetween);
 
+const Colors = {
+  WHITE: '#ffffff',
+  YELLOW: '#ffe800',
+};
+
 const DATES = {
   All: 'all-time',
 
@@ -41,9 +46,9 @@ const countWatchedMoviesInDateRange = (watchedMovies, dateFrom, dateTo) => {
 
 };
 
-const countByGenres = (movieData) => {
+const countByGenres = (movies) => {
   const genres = {};
-  movieData.forEach((film) => {
+  movies.forEach((film) => {
     for ( let i = 0; i < film.genres.length; i++) {
       if(genres[film.genres[i]]) {
         genres[film.genres[i]] ++;
@@ -130,8 +135,8 @@ const renderDiagram = (statisticCtx, sortedGenres) => {
       labels: Object.keys(sortedGenres),
       datasets: [{
         data: Object.values(sortedGenres),
-        backgroundColor: '#ffe800',
-        hoverBackgroundColor: '#ffe800',
+        backgroundColor: Colors.YELLOW,
+        hoverBackgroundColor: Colors.YELLOW,
         anchor: 'start',
         barThickness: 24,
       }],
@@ -143,7 +148,7 @@ const renderDiagram = (statisticCtx, sortedGenres) => {
           font: {
             size: 20,
           },
-          color: '#ffffff',
+          color: Colors.WHITE,
           anchor: 'start',
           align: 'start',
           offset: 40,
@@ -152,7 +157,7 @@ const renderDiagram = (statisticCtx, sortedGenres) => {
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#ffffff',
+            fontColor: Colors.WHITE,
             padding: 100,
             fontSize: 20,
           },
